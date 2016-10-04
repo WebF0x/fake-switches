@@ -23,7 +23,7 @@ from tests.util.protocol_util import with_protocol
 
 class DellConfigureTest(unittest.TestCase):
     __test__ = False
-    protocol_factory = None
+    protocol_factory = telnet_protocol_factory #None
 
     def setUp(self):
         self.protocol = self.protocol_factory()

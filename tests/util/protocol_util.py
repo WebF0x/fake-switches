@@ -1,5 +1,7 @@
 import logging
 
+import sys
+
 from hamcrest import assert_that, equal_to
 import pexpect
 import re
@@ -25,7 +27,7 @@ class LoggingFileInterface(object):
         self.prefix = prefix
 
     def write(self, data):
-        for line in data.rstrip('\r\n').split('\r\n'):
+        for line in data.rstrip(b'\r\n').split(b'\r\n'):
             logging.info(self.prefix + repr(line))
 
     def flush(self):
@@ -60,37 +62,46 @@ class ProtocolTester(object):
         pass
 
     def read(self, expected, regex=False):
+        assert(isinstance(expected, str))
         self.wait_for(expected, regex)
-        assert_that(self.child.before, equal_to(""))
+        assert_that(self.child.before, equal_to(b""))
 
     def readln(self, expected, regex=False):
+        assert(isinstance(expected, str))
         self.read(expected + "\r\n", regex=regex)
 
     def read_lines_until(self, expected):
+        assert(isinstance(expected, str))
         self.wait_for(expected)
-        lines = self.child.before.split('\r\n')
+        lines = self.child.before.decode().split('\r\n')
         return lines
 
     def read_eof(self):
         self.child.expect(pexpect.EOF)
 
     def wait_for(self, expected, regex=False):
-        self.child.expect(re.escape(expected) if not regex else expected)
+        assert(isinstance(expected, str))
+        pattern = re.escape(expected) if not regex else expected
+        assert(isinstance(pattern, str))
+        self.child.expect(pattern)
 
     def write(self, data):
-        self.child.sendline(data)
+        self.child.sendline(data.encode())
         self.read(data + "\r\n")
 
     def write_invisible(self, data):
-        self.child.sendline(data)
+        assert(isinstance(data, str))
+        self.child.sendline(data.encode())
         self.read("\r\n")
 
     def write_stars(self, data):
-        self.child.sendline(data)
+        assert(isinstance(data, str))
+        self.child.sendline(data.encode())
         self.read(len(data) * "*" + "\r\n")
 
     def write_raw(self, data):
-        self.child.send(data)
+        assert(isinstance(data, str))
+        self.child.send(data.encode())
 
 
 class SshTester(ProtocolTester):
@@ -112,6 +123,6 @@ class TelnetTester(ProtocolTester):
     def login(self):
         self.wait_for("Username: ")
         self.write(self.username)
-        self.read("Password: ")
+        self.wait_for("[pP]assword: ", True)
         self.write_invisible(self.password)
         self.wait_for('[>#]$', regex=True)

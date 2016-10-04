@@ -1,5 +1,5 @@
+-e git+https://github.com/stephanerobert/tftpy.git@master#egg=tftpy
+-e git+https://github.com/twisted/twisted.git@trunk#egg=twisted
 netaddr>=0.7.13
-tftpy>=0.6.1
 pycrypto>=2.6.1
-Twisted==15.5.0
 pyasn1>=0.1.7

@@ -30,6 +30,7 @@ class TestCiscoAutoEnabledSwitchProtocol(unittest.TestCase):
         t.read("my_switch#")
 
     def create_client(self):
+        return TelnetTester("telnet", cisco_switch_ip, cisco_auto_enabled_switch_telnet_port, 'root', 'root')
         raise NotImplementedError()
 
 
@@ -37,6 +38,7 @@ class TestCiscoSwitchProtocolSSH(TestCiscoAutoEnabledSwitchProtocol):
     __test__ = True
 
     def create_client(self):
+        #raise NotImplementedError()
         return SshTester("ssh", cisco_switch_ip, cisco_auto_enabled_switch_ssh_port, 'root', 'root')
 
 
@@ -44,4 +46,5 @@ class TestCiscoSwitchProtocolTelnet(TestCiscoAutoEnabledSwitchProtocol):
     __test__ = True
 
     def create_client(self):
+        #raise NotImplementedError()
         return TelnetTester("telnet", cisco_switch_ip, cisco_auto_enabled_switch_telnet_port, 'root', 'root')

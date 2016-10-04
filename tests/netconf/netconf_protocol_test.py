@@ -97,7 +97,7 @@ class NetconfProtocolTest(unittest.TestCase):
         self.netconf.connectionMade()
         self.say_hello()
 
-        self.netconf.dataReceived("""<?xml version="1.0" encoding="UTF-8"?>
+        data = """<?xml version="1.0" encoding="UTF-8"?>
             <nc:rpc xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="urn:uuid:346c9f18-c420-11e4-8e4c-fa163ecd3b0a">
                 <nc:edit-config>
                     <nc:target>
@@ -107,7 +107,8 @@ class NetconfProtocolTest(unittest.TestCase):
                         <nc:configuration><nc:stuff><substuff>is hot!</substuff></nc:stuff></nc:configuration>
                     </nc:config>
                 </nc:edit-config>
-            </nc:rpc>]]>]]>""")
+            </nc:rpc>]]>]]>"""
+        self.netconf.dataReceived(data)
 
         self.assert_xml_response("""
             <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="urn:uuid:346c9f18-c420-11e4-8e4c-fa163ecd3b0a">
@@ -131,7 +132,7 @@ class NetconfProtocolTest(unittest.TestCase):
             </nc:rpc>
             ]]>]]>""")
 
-        assert_that(self.netconf.transport.write.call_args[0][0], xml_equals_to("""
+        assert_that(self.netconf.transport.write.call_args[0][0].decode(), xml_equals_to("""
             <rpc-reply xmlns:junos="http://xml.juniper.net/junos/11.4R1/junos" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
               <data/>
             </rpc-reply>
@@ -218,7 +219,7 @@ class NetconfProtocolTest(unittest.TestCase):
             '<hello xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><capabilities><capability>urn:ietf:params:xml:ns:netconf:base:1.0</capability></capabilities></hello>]]>]]>')
 
     def assert_xml_response(self, expected):
-        data = self.netconf.transport.write.call_args[0][0]
+        data = self.netconf.transport.write.call_args[0][0].decode()
         assert_that(data, ends_with("]]>]]>\n"))
         data = data.replace("]]>]]>", "")
         assert_that(data, xml_equals_to(expected))
