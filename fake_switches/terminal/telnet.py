@@ -132,6 +132,7 @@ class SwitchTelnetShell(StatefulTelnet):
             self.transport.loseConnection()
 
     def applicationDataReceived(self, data):
+        data = data.decode()
         if data in self._printable_chars:
             if self.awaiting_keystroke is not None:
                 args = self.awaiting_keystroke[1] + [data]

@@ -27,7 +27,7 @@ from tests.util.protocol_util import with_protocol
 
 class DellConfigureInterfaceTest(unittest.TestCase):
     __test__ = False
-    protocol_factory = ssh_protocol_factory
+    protocol_factory = None
 
     def setUp(self):
         self.protocol = self.protocol_factory()

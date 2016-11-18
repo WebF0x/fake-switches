@@ -86,6 +86,7 @@ class ProtocolTester(object):
         self.child.expect(pattern)
 
     def write(self, data):
+        assert(isinstance(data, str))
         self.child.sendline(data.encode())
         self.read(data + "\r\n")
 
