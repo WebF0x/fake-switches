@@ -70,12 +70,14 @@ class NetconfJunos1_0(Capability):
         running = self.datastore.to_etree(RUNNING)
         candidate = self.datastore.to_etree(CANDIDATE)
 
-        data = etree.fromstring(textwrap.dedent("""
+        data_string = textwrap.dedent(
+            """
             <configuration-information>
-                <configuration-output>
-            {0}</configuration-output>
+                <configuration-output>{0}</configuration-output>
             </configuration-information>
-            """).format("There were some changes" if not xml_equals(running, candidate) else ""), parser=etree.XMLParser(recover=True))
+            """).format("There were some changes" if not xml_equals(running, candidate) else "")
+        assert(isinstance(data_string, str))
+        data = etree.fromstring(data_string, parser=etree.XMLParser(recover=True))
 
         return Response(data)
 

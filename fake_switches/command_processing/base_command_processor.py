@@ -93,11 +93,13 @@ class BaseCommandProcessor(CommandProcessor):
         return getattr(self, 'continue_' + cmd, None)
 
     def write(self, data):
+        assert(isinstance(data,str))
         filtered = self.pipe(data)
         if filtered is not False:
             self.terminal_controller.write(filtered)
 
     def write_line(self, data):
+        assert(isinstance(data,str))
         self.write(data + "\n")
 
     def show_prompt(self):

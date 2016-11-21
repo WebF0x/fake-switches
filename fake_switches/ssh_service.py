@@ -33,7 +33,7 @@ class SSHDemoAvatar(avatar.ConchUser):
 
         netconf_protocol = switch_core.get_netconf_protocol()
         if netconf_protocol:
-            self.subsystemLookup.update({'netconf': netconf_protocol})
+            self.subsystemLookup.update({b'netconf': netconf_protocol})
 
     def openShell(self, protocol):
         server_protocol = insults.ServerProtocol(SwitchSSHShell, self, switch_core=self.switch_core)

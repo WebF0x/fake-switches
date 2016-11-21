@@ -52,6 +52,9 @@ class NetconfProtocol(Protocol):
         }))
 
     def dataReceived(self, data):
+        if isinstance(data, bytes):
+            data = data.decode()
+        assert(isinstance(data, str))
         self.logger.info("Received : %s" % repr(data))
         self.input_buffer += data
         if self.input_buffer.rstrip().endswith("]]>]]>"):
@@ -59,6 +62,7 @@ class NetconfProtocol(Protocol):
             self.input_buffer = ""
 
     def process(self, data):
+        assert(isinstance(data, str))
         if not self.been_greeted:
             self.logger.info("Client's greeting received")
             self.been_greeted = True
