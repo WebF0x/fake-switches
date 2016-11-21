@@ -48,8 +48,9 @@ class StatefulTelnet(Telnet, object):
         }
 
     def applicationDataReceived(self, data):
-        data = data.decode()
-        for key in data:
+        assert(isinstance(data, bytes))
+        data_string = data.decode()
+        for key in data_string:
             m = self._key_handlers.get(key)
             if m is not None:
                 m()
@@ -132,10 +133,11 @@ class SwitchTelnetShell(StatefulTelnet):
             self.transport.loseConnection()
 
     def applicationDataReceived(self, data):
-        data = data.decode()
-        if data in self._printable_chars:
+        assert(isinstance(data, bytes))
+        data_string = data.decode()
+        if data_string in self._printable_chars:
             if self.awaiting_keystroke is not None:
-                args = self.awaiting_keystroke[1] + [data]
+                args = self.awaiting_keystroke[1] + [data_string]
                 cmd = self.awaiting_keystroke[0]
                 cmd(*args)
                 return
