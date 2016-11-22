@@ -4,6 +4,7 @@ import unittest
 from hamcrest.core.base_matcher import BaseMatcher
 import re
 from hamcrest import assert_that, ends_with, equal_to, has_length, has_key
+from lxml.etree import _Element
 from mock import Mock
 from ncclient.xml_ import to_ele, to_xml
 from fake_switches.netconf import RUNNING, dict_2_etree
@@ -235,7 +236,7 @@ class XmlEqualsToMatcher(BaseMatcher):
         self.last_error = None
 
     def _matches(self, other):
-        otherxml = other if not isinstance(other, str) else to_ele(other)
+        otherxml = other if isinstance(other, _Element) else to_ele(other)
         try:
             self.compare_nodes(self.expected, otherxml)
             return True
