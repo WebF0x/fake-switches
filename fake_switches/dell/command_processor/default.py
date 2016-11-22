@@ -22,20 +22,20 @@ class DellDefaultCommandProcessor(BaseCommandProcessor):
     enabled_command_processor = DellEnabledCommandProcessor
 
     def get_prompt(self):
-        return "\n" + "%s>" % self.switch_configuration.name
+        return u"\n" + u"%s>" % self.switch_configuration.name
 
     def do_enable(self):
-        self.write("Password:")
-        self.replace_input = '*'
+        self.write(u"Password:")
+        self.replace_input = u'*'
         self.continue_to(self.continue_enabling)
 
     def continue_enabling(self, line):
         self.replace_input = False
-        if line == "" or line in self.switch_configuration.privileged_passwords:
-            self.write_line("")
+        if line == u"" or line in self.switch_configuration.privileged_passwords:
+            self.write_line(u"")
             self.move_to(self.enabled_command_processor)
         else:
-            self.write("Incorrect Password!")
+            self.write(u"Incorrect Password!")
 
     def do_exit(self):
         self.is_done = True

@@ -36,6 +36,6 @@ class SwitchTelnetService(object):
     def hook_to_reactor(self, reactor):
         factory = SwitchTelnetFactory(self.switch_core)
         port = reactor.listenTCP(port=self.port, factory=factory, interface=self.ip)
-        logging.info("{} (TELNET): Registered on {} tcp/{}".format(
+        logging.info(u"{} (TELNET): Registered on {} tcp/{}".format(
             self.switch_core.switch_configuration.name, self.ip, self.port))
         return port

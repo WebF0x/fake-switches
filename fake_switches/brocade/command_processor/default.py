@@ -18,7 +18,7 @@ from fake_switches.command_processing.base_command_processor import BaseCommandP
 
 class DefaultCommandProcessor(BaseCommandProcessor):
     def get_prompt(self):
-        return "SSH@%s>" % self.switch_configuration.name
+        return u"SSH@%s>" % self.switch_configuration.name
 
     def delegate_to_sub_processor(self, line):
         processed = self.sub_processor.process_command(line)
@@ -27,14 +27,14 @@ class DefaultCommandProcessor(BaseCommandProcessor):
         return processed
 
     def do_enable(self):
-        self.write("Password:")
-        self.replace_input = ''
+        self.write(u"Password:")
+        self.replace_input = u''
         self.continue_to(self.continue_enabling)
 
     def continue_enabling(self, line):
         self.replace_input = False
-        if line == "" or line in self.switch_configuration.privileged_passwords:
+        if line == u"" or line in self.switch_configuration.privileged_passwords:
             self.move_to(EnabledCommandProcessor)
         else:
-            self.write_line("Error - Incorrect username or password.")
+            self.write_line(u"Error - Incorrect username or password.")
 

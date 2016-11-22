@@ -30,7 +30,7 @@ class JuniperSwitchCore(object):
 
         # the aggregated port are considered physical ports and are always existing in a junos environment
         for i in range(0, aggregated_port_count):
-            switch_configuration.add_port(switch_configuration.new("AggregatedPort", name="ae{}".format(i)))
+            switch_configuration.add_port(switch_configuration.new(u"AggregatedPort", name=u"ae{}".format(i)))
 
         self.last_connection_id = 0
         self.datastore = datastore_class(self.switch_configuration)
@@ -54,40 +54,39 @@ class JuniperSwitchCore(object):
                 NetconfJunos1_0,
                 DmiSystem1_0
             ],
-            additionnal_namespaces={"junos": NS_JUNOS},
-            logger=logging.getLogger("fake_switches.juniper.%s.%s.netconf" % (self.switch_configuration.name, self.last_connection_id))
+            additionnal_namespaces={u"junos": NS_JUNOS},
+            logger=logging.getLogger(u"fake_switches.juniper.%s.%s.netconf" % (self.switch_configuration.name, self.last_connection_id))
         )
 
 
 class NetconfJunos1_0(Capability):
     def get_url(self):
-        return "http://xml.juniper.net/netconf/junos/1.0"
+        return u"http://xml.juniper.net/netconf/junos/1.0"
 
     def get_configuration(self, request):
-        if "compare" not in request.attrib:
-            raise OperationNotSupported("get_configuration without a compare")
+        if u"compare" not in request.attrib:
+            raise OperationNotSupported(u"get_configuration without a compare")
 
         running = self.datastore.to_etree(RUNNING)
         candidate = self.datastore.to_etree(CANDIDATE)
 
         data_string = textwrap.dedent(
-            """
+            u"""
             <configuration-information>
                 <configuration-output>{0}</configuration-output>
             </configuration-information>
-            """).format("There were some changes" if not xml_equals(running, candidate) else "")
-        assert(isinstance(data_string, str))
+            """).format(u"There were some changes" if not xml_equals(running, candidate) else u"")
         data = etree.fromstring(data_string, parser=etree.XMLParser(recover=True))
 
         return Response(data)
 
     def get_interface_information(self, request):
-        if len(request) == 1 and request[0].tag == "terse":
+        if len(request) == 1 and request[0].tag == u"terse":
             return Response(self.datastore.get_interface_information_terse())
 
-        raise NetconfError("syntax error", err_type="protocol", tag="operation-failed")
+        raise NetconfError(u"syntax error", err_type=u"protocol", tag=u"operation-failed")
 
 
 class DmiSystem1_0(Capability):
     def get_url(self):
-        return "http://xml.juniper.net/dmi/system/1.0"
+        return u"http://xml.juniper.net/dmi/system/1.0"

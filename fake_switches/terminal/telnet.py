@@ -21,7 +21,7 @@ from fake_switches.terminal import TerminalController
 
 
 class StatefulTelnet(Telnet, object):
-    """
+    u"""
     This is an easy telnet service to mock a telnet server
     It does not implement everything a terminal does, only what
     automated code calling it would require, example : line editing.
@@ -41,10 +41,10 @@ class StatefulTelnet(Telnet, object):
         self.will(SGA)
 
         self.handler = lambda data: None
-        self._buffer = ""
+        self._buffer = u""
         self._key_handlers = {
-            '\r': self._run_command,
-            '\n': self._run_command,
+            u'\r': self._run_command,
+            u'\n': self._run_command,
         }
 
     def applicationDataReceived(self, data):
@@ -58,11 +58,10 @@ class StatefulTelnet(Telnet, object):
                 self._buffer += key
                 if self._replace_input is None:
                     self.write(key)
-                elif self._replace_input != "":
+                elif self._replace_input != u"":
                     self.write(self._replace_input)
 
     def write(self, data):
-        assert(isinstance(data, str))
         self.transport.write(lf_to_crlf(data).encode())
 
     def writeln(self, data):
@@ -70,7 +69,7 @@ class StatefulTelnet(Telnet, object):
         self.next_line()
 
     def next_line(self):
-        self.write('\n')
+        self.write(u'\n')
 
     def enable_input_replacement(self, replace_char):
         self._replace_input = replace_char
@@ -81,7 +80,7 @@ class StatefulTelnet(Telnet, object):
     def _run_command(self):
         self.next_line()
         self.handler(self._buffer)
-        self._buffer = ""
+        self._buffer = u""
 
     def disableRemote(self, option):
         return True
@@ -107,18 +106,18 @@ class SwitchTelnetShell(StatefulTelnet):
 
     def connectionMade(self):
         super(SwitchTelnetShell, self).connectionMade()
-        self.write('Username: ')
+        self.write(u'Username: ')
         self.handler = self.validate_username
 
     def validate_username(self, _):
-        self.write('Password: ')
-        self.enable_input_replacement("")
+        self.write(u'Password: ')
+        self.enable_input_replacement(u"")
         self.handler = self.validate_password
 
     def validate_password(self, _):
         self.disable_input_replacement()
         self.session = self.switch_core.launch(
-            "telnet", TelnetTerminalController(shell=self))
+            u"telnet", TelnetTerminalController(shell=self))
         self.handler = self.command
 
     def command(self, line):

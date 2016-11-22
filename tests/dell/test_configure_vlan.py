@@ -40,46 +40,46 @@ class DellConfigureVlanTest(unittest.TestCase):
         configuring_vlan(t, 1234)
 
         assert_running_config_contains_in_order(t, [
-            "vlan database",
-            "vlan 1,1234",
-            "exit"
+            u"vlan database",
+            u"vlan 1,1234",
+            u"exit"
         ])
 
         unconfigure_vlan(t, 1234)
 
         assert_running_config_contains_in_order(t, [
-            "vlan database",
-            "vlan 1",
-            "exit"
+            u"vlan database",
+            u"vlan 1",
+            u"exit"
         ])
 
     @with_protocol
     def test_unconfiguring_a_vlan_failing(self, t):
         enable(t)
 
-        t.write("configure")
-        t.readln("")
-        t.read("my_switch(config)#")
+        t.write(u"configure")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
 
-        t.write("vlan database")
-        t.readln("")
-        t.read("my_switch(config-vlan)#")
+        t.write(u"vlan database")
+        t.readln(u"")
+        t.read(u"my_switch(config-vlan)#")
 
-        t.write("no vlan 3899")
-        t.readln("Warning: The use of large numbers of VLANs or interfaces may cause significant")
-        t.readln("delays in applying the configuration.")
-        t.readln("")
-        t.readln("")
-        t.readln("These VLANs do not exist:  3899.")
-        t.readln("")
+        t.write(u"no vlan 3899")
+        t.readln(u"Warning: The use of large numbers of VLANs or interfaces may cause significant")
+        t.readln(u"delays in applying the configuration.")
+        t.readln(u"")
+        t.readln(u"")
+        t.readln(u"These VLANs do not exist:  3899.")
+        t.readln(u"")
 
-        t.read("my_switch(config-vlan)#")
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch(config)#")
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch#")
+        t.read(u"my_switch(config-vlan)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch#")
 
     @with_protocol
     def test_configuring_a_vlan_name(self, t):
@@ -87,40 +87,40 @@ class DellConfigureVlanTest(unittest.TestCase):
 
         configuring_vlan(t, 1234)
 
-        t.write("configure")
-        t.readln("")
-        t.read("my_switch(config)#")
-        t.write("interface vlan 1234")
-        t.readln("")
-        t.read("my_switch(config-if-vlan1234)#")
-        t.write("name")
-        t.readln("")
-        t.readln("Command not found / Incomplete command. Use ? to list commands.")
-        t.readln("")
-        t.read("my_switch(config-if-vlan1234)#")
-        t.write("name one two")
-        t.readln("                                     ^")
-        t.readln("% Invalid input detected at '^' marker.")
-        t.readln("")
-        t.read("my_switch(config-if-vlan1234)#")
-        t.write("name this-name-is-too-long-buddy-buddy")
-        t.readln("Name must be 32 characters or less.")
-        t.readln("")
-        t.read("my_switch(config-if-vlan1234)#")
-        t.write("name this-name-is-too-long-buddy-budd")
-        t.readln("")
-        t.read("my_switch(config-if-vlan1234)#")
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch(config)#")
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch#")
+        t.write(u"configure")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
+        t.write(u"interface vlan 1234")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-vlan1234)#")
+        t.write(u"name")
+        t.readln(u"")
+        t.readln(u"Command not found / Incomplete command. Use ? to list commands.")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-vlan1234)#")
+        t.write(u"name one two")
+        t.readln(u"                                     ^")
+        t.readln(u"% Invalid input detected at '^' marker.")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-vlan1234)#")
+        t.write(u"name this-name-is-too-long-buddy-buddy")
+        t.readln(u"Name must be 32 characters or less.")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-vlan1234)#")
+        t.write(u"name this-name-is-too-long-buddy-budd")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-vlan1234)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch#")
 
-        assert_interface_configuration(t, "vlan 1234", [
-            "interface vlan 1234",
-            "name \"this-name-is-too-long-buddy-budd\"",
-            "exit",
+        assert_interface_configuration(t, u"vlan 1234", [
+            u"interface vlan 1234",
+            u"name \"this-name-is-too-long-buddy-budd\"",
+            u"exit",
         ])
 
         unconfigure_vlan(t, 1234)

@@ -21,9 +21,9 @@ class ShellSession(object):
         self.command_processor.show_prompt()
 
     def receive(self, line):
-        self.command_processor.logger.debug("received: %s" % line)
+        self.command_processor.logger.debug(u"received: %s" % line)
         if not self.command_processor.process_command(line):
-            self.command_processor.logger.info("Command not supported : %s" % line)
+            self.command_processor.logger.info(u"Command not supported : %s" % line)
 
             self.handle_unknown_command(line)
 

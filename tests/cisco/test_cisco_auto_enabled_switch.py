@@ -17,20 +17,20 @@ class TestCiscoAutoEnabledSwitchProtocol(unittest.TestCase):
 
     @with_protocol
     def test_enable_command_requires_a_password(self, t):
-        t.write("enable")
-        t.read("my_switch#")
-        t.write("terminal length 0")
-        t.read("my_switch#")
-        t.write("terminal width 0")
-        t.read("my_switch#")
-        t.write("configure terminal")
-        t.readln("Enter configuration commands, one per line.  End with CNTL/Z.")
-        t.read("my_switch(config)#")
-        t.write("exit")
-        t.read("my_switch#")
+        t.write(u"enable")
+        t.read(u"my_switch#")
+        t.write(u"terminal length 0")
+        t.read(u"my_switch#")
+        t.write(u"terminal width 0")
+        t.read(u"my_switch#")
+        t.write(u"configure terminal")
+        t.readln(u"Enter configuration commands, one per line.  End with CNTL/Z.")
+        t.read(u"my_switch(config)#")
+        t.write(u"exit")
+        t.read(u"my_switch#")
 
     def create_client(self):
-        return TelnetTester("telnet", cisco_switch_ip, cisco_auto_enabled_switch_telnet_port, 'root', 'root')
+        return TelnetTester(u"telnet", cisco_switch_ip, cisco_auto_enabled_switch_telnet_port, u'root', u'root')
         raise NotImplementedError()
 
 
@@ -39,7 +39,7 @@ class TestCiscoSwitchProtocolSSH(TestCiscoAutoEnabledSwitchProtocol):
 
     def create_client(self):
         #raise NotImplementedError()
-        return SshTester("ssh", cisco_switch_ip, cisco_auto_enabled_switch_ssh_port, 'root', 'root')
+        return SshTester(u"ssh", cisco_switch_ip, cisco_auto_enabled_switch_ssh_port, u'root', u'root')
 
 
 class TestCiscoSwitchProtocolTelnet(TestCiscoAutoEnabledSwitchProtocol):
@@ -47,4 +47,4 @@ class TestCiscoSwitchProtocolTelnet(TestCiscoAutoEnabledSwitchProtocol):
 
     def create_client(self):
         #raise NotImplementedError()
-        return TelnetTester("telnet", cisco_switch_ip, cisco_auto_enabled_switch_telnet_port, 'root', 'root')
+        return TelnetTester(u"telnet", cisco_switch_ip, cisco_auto_enabled_switch_telnet_port, u'root', u'root')

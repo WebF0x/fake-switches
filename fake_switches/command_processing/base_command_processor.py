@@ -18,7 +18,7 @@ from fake_switches.command_processing.command_processor import CommandProcessor
 class BaseCommandProcessor(CommandProcessor):
 
     def __init__(self, switch_configuration, terminal_controller, logger, piping_processor):
-        """
+        u"""
         :type switch_configuration: fake_switches.switch_configuration.SwitchConfiguration
         :type terminal_controller: fake_switches.terminal.TerminalController
         :type logger: logging.Logger
@@ -36,8 +36,8 @@ class BaseCommandProcessor(CommandProcessor):
         self.awaiting_keystroke = False
 
     def process_command(self, line):
-        if " | " in line:
-            line, piping_command = line.split(" | ", 1)
+        if u" | " in line:
+            line, piping_command = line.split(u" | ", 1)
             piping_started = self.activate_piping(piping_command)
             if not piping_started:
                 return False
@@ -63,7 +63,7 @@ class BaseCommandProcessor(CommandProcessor):
         if line.strip():
             func, args = self.get_command_func(line)
             if not func:
-                self.logger.debug("%s can't process : %s, falling back to parent" % (self.__class__.__name__, line))
+                self.logger.debug(u"%s can't process : %s, falling back to parent" % (self.__class__.__name__, line))
                 return False
             else:
                 func(*args)
@@ -90,17 +90,15 @@ class BaseCommandProcessor(CommandProcessor):
         self.continuing_to = continuing_action
 
     def get_continue_command_func(self, cmd):
-        return getattr(self, 'continue_' + cmd, None)
+        return getattr(self, u'continue_' + cmd, None)
 
     def write(self, data):
-        assert(isinstance(data,str))
         filtered = self.pipe(data)
         if filtered is not False:
             self.terminal_controller.write(filtered)
 
     def write_line(self, data):
-        assert(isinstance(data,str))
-        self.write(data + "\n")
+        self.write(data + u"\n")
 
     def show_prompt(self):
         if self.sub_processor is not None:

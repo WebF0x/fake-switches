@@ -26,164 +26,164 @@ from fake_switches import group_sequences
 class EnabledCommandProcessor(BaseCommandProcessor):
 
     def get_prompt(self):
-        return self.switch_configuration.name + "#"
+        return self.switch_configuration.name + u"#"
 
     def do_enable(self, *args):
         pass
 
     def do_configure(self, *_):
-        self.write_line("Enter configuration commands, one per line.  End with CNTL/Z.")
+        self.write_line(u"Enter configuration commands, one per line.  End with CNTL/Z.")
         self.move_to(ConfigCommandProcessor)
 
     def do_show(self, *args):
-        if "running-config".startswith(args[0]):
+        if u"running-config".startswith(args[0]):
             if len(args) < 2:
                 self.show_run()
-            elif "vlan".startswith(args[1]):
-                self.write_line("Building configuration...")
-                self.write_line("")
-                self.write_line("Current configuration:")
+            elif u"vlan".startswith(args[1]):
+                self.write_line(u"Building configuration...")
+                self.write_line(u"")
+                self.write_line(u"Current configuration:")
                 for vlan in self.switch_configuration.vlans:
                     if vlan.number == int(args[2]):
-                        self.write_line("\n".join(["!"] + build_running_vlan(vlan)))
-                self.write_line("end")
-                self.write_line("")
-            elif "interface".startswith(args[1]):
-                if_name = "".join(args[2:])
+                        self.write_line(u"\n".join([u"!"] + build_running_vlan(vlan)))
+                self.write_line(u"end")
+                self.write_line(u"")
+            elif u"interface".startswith(args[1]):
+                if_name = u"".join(args[2:])
                 port = self.switch_configuration.get_port_by_partial_name(if_name)
 
                 if port:
-                    self.write_line("Building configuration...")
-                    self.write_line("")
+                    self.write_line(u"Building configuration...")
+                    self.write_line(u"")
 
-                    data = ["!"] + build_running_interface(port) + ["end", ""]
+                    data = [u"!"] + build_running_interface(port) + [u"end", u""]
 
-                    self.write_line("Current configuration : %i bytes" % (len("\n".join(data)) + 1))
+                    self.write_line(u"Current configuration : %i bytes" % (len(u"\n".join(data)) + 1))
                     [self.write_line(l) for l in data]
                 else:
-                    self.write_line("                               ^")
-                    self.write_line("% Invalid input detected at '^' marker.")
-                    self.write_line("")
+                    self.write_line(u"                               ^")
+                    self.write_line(u"% Invalid input detected at '^' marker.")
+                    self.write_line(u"")
 
-        elif "vlan".startswith(args[0]):
-            self.write_line("")
-            self.write_line("VLAN Name                             Status    Ports")
-            self.write_line("---- -------------------------------- --------- -------------------------------")
+        elif u"vlan".startswith(args[0]):
+            self.write_line(u"")
+            self.write_line(u"VLAN Name                             Status    Ports")
+            self.write_line(u"---- -------------------------------- --------- -------------------------------")
             for vlan in sorted(self.switch_configuration.vlans, key=lambda v: v.number):
                 ports = [port.get_subname(length=2) for port in self.switch_configuration.ports
                          if port.access_vlan == vlan.number or (vlan.number == 1 and port.access_vlan is None)]
-                self.write_line("%-4s %-32s %s%s" % (
+                self.write_line(u"%-4s %-32s %s%s" % (
                     vlan.number,
-                     vlan_name(vlan) if vlan_name(vlan) else "VLAN%s" % vlan.number,
-                    "active",
-                    ("    " + ", ".join(ports)) if ports else ""
+                     vlan_name(vlan) if vlan_name(vlan) else u"VLAN%s" % vlan.number,
+                    u"active",
+                    (u"    " + u", ".join(ports)) if ports else u""
                 ))
             if len(args) == 1:
-                self.write_line("")
-                self.write_line("VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2")
-                self.write_line("---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------")
+                self.write_line(u"")
+                self.write_line(u"VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2")
+                self.write_line(u"---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------")
                 for vlan in sorted(self.switch_configuration.vlans, key=lambda v: v.number):
-                    self.write_line("%-4s enet  10%04d     1500  -      -      -        -    -        0      0" % (vlan.number, vlan.number))
-                self.write_line("")
-                self.write_line("Remote SPAN VLANs")
-                self.write_line("------------------------------------------------------------------------------")
-                self.write_line("")
-                self.write_line("")
-                self.write_line("Primary Secondary Type              Ports")
-                self.write_line("------- --------- ----------------- ------------------------------------------")
-                self.write_line("")
-        elif "etherchannel".startswith(args[0]) and len(args) == 2 and "summary".startswith(args[1]):
+                    self.write_line(u"%-4s enet  10%04d     1500  -      -      -        -    -        0      0" % (vlan.number, vlan.number))
+                self.write_line(u"")
+                self.write_line(u"Remote SPAN VLANs")
+                self.write_line(u"------------------------------------------------------------------------------")
+                self.write_line(u"")
+                self.write_line(u"")
+                self.write_line(u"Primary Secondary Type              Ports")
+                self.write_line(u"------- --------- ----------------- ------------------------------------------")
+                self.write_line(u"")
+        elif u"etherchannel".startswith(args[0]) and len(args) == 2 and u"summary".startswith(args[1]):
             ports = sorted(self.switch_configuration.ports, key=lambda x: x.name)
             port_channels = sorted(
                 [p for p in ports if isinstance(p, AggregatedPort)],
                 key=port_channel_number)
-            self.write_line("Flags:  D - down        P - bundled in port-channel")
-            self.write_line("        I - stand-alone s - suspended")
-            self.write_line("        H - Hot-standby (LACP only)")
-            self.write_line("        R - Layer3      S - Layer2")
-            self.write_line("        U - in use      f - failed to allocate aggregator")
-            self.write_line("")
-            self.write_line("        M - not in use, minimum links not met")
-            self.write_line("        u - unsuitable for bundling")
-            self.write_line("        w - waiting to be aggregated")
-            self.write_line("        d - default port")
-            self.write_line("")
-            self.write_line("")
-            self.write_line("Number of channel-groups in use: {}".format(len(port_channels)))
-            self.write_line("Number of aggregators:           {}".format(len(port_channels)))
-            self.write_line("")
-            self.write_line("Group  Port-channel  Protocol    Ports")
-            self.write_line("------+-------------+-----------+-----------------------------------------------")
+            self.write_line(u"Flags:  D - down        P - bundled in port-channel")
+            self.write_line(u"        I - stand-alone s - suspended")
+            self.write_line(u"        H - Hot-standby (LACP only)")
+            self.write_line(u"        R - Layer3      S - Layer2")
+            self.write_line(u"        U - in use      f - failed to allocate aggregator")
+            self.write_line(u"")
+            self.write_line(u"        M - not in use, minimum links not met")
+            self.write_line(u"        u - unsuitable for bundling")
+            self.write_line(u"        w - waiting to be aggregated")
+            self.write_line(u"        d - default port")
+            self.write_line(u"")
+            self.write_line(u"")
+            self.write_line(u"Number of channel-groups in use: {}".format(len(port_channels)))
+            self.write_line(u"Number of aggregators:           {}".format(len(port_channels)))
+            self.write_line(u"")
+            self.write_line(u"Group  Port-channel  Protocol    Ports")
+            self.write_line(u"------+-------------+-----------+-----------------------------------------------")
             for port_channel in port_channels:
                 members = [short_name(p) for p in ports
                            if p.aggregation_membership == port_channel.name]
                 self.write_line(
-                    "{: <6} {: <13} {: <11} {}".format(
+                    u"{: <6} {: <13} {: <11} {}".format(
                         port_channel_number(port_channel),
-                        "{}(S{})".format(short_name(port_channel), "U" if members else ""),
-                        "  LACP",
-                        "  ".join("{}(P)".format(m) for m in members)))
-            self.write_line("")
-        elif "ip".startswith(args[0]):
-            if "interface".startswith(args[1]):
+                        u"{}(S{})".format(short_name(port_channel), u"U" if members else u""),
+                        u"  LACP",
+                        u"  ".join(u"{}(P)".format(m) for m in members)))
+            self.write_line(u"")
+        elif u"ip".startswith(args[0]):
+            if u"interface".startswith(args[1]):
                 if_list = None
                 if len(args) > 2:
-                    interface = self.switch_configuration.get_port_by_partial_name("".join(args[2:]))
+                    interface = self.switch_configuration.get_port_by_partial_name(u"".join(args[2:]))
                     if interface:
                         if_list = [interface]
                     else:
-                        self.write_line("                                 ^")
-                        self.write_line("% Invalid input detected at '^' marker.")
-                        self.write_line("")
+                        self.write_line(u"                                 ^")
+                        self.write_line(u"% Invalid input detected at '^' marker.")
+                        self.write_line(u"")
                 else:
-                    if_list = sorted(self.switch_configuration.ports, key=lambda e: ("a" if isinstance(e, VlanPort) else "b") + e.name)
+                    if_list = sorted(self.switch_configuration.ports, key=lambda e: (u"a" if isinstance(e, VlanPort) else u"b") + e.name)
                 if if_list:
                     for interface in if_list:
-                        self.write_line("%s is down, line protocol is down" % interface.name)
+                        self.write_line(u"%s is down, line protocol is down" % interface.name)
                         if not isinstance(interface, VlanPort):
-                            self.write_line("  Internet protocol processing disabled")
+                            self.write_line(u"  Internet protocol processing disabled")
                         else:
                             if len(interface.ips) == 0:
-                                self.write_line("  Internet protocol processing disabled")
+                                self.write_line(u"  Internet protocol processing disabled")
                             else:
-                                self.write_line("  Internet address is %s" % interface.ips[0])
+                                self.write_line(u"  Internet address is %s" % interface.ips[0])
                                 for ip in interface.ips[1:]:
-                                    self.write_line("  Secondary address %s" % ip)
-                                self.write_line("  Outgoing access list is %s" % (interface.access_group_out if interface.access_group_out else "not set"))
-                                self.write_line("  Inbound  access list is %s" % (interface.access_group_in if interface.access_group_in else "not set"))
+                                    self.write_line(u"  Secondary address %s" % ip)
+                                self.write_line(u"  Outgoing access list is %s" % (interface.access_group_out if interface.access_group_out else u"not set"))
+                                self.write_line(u"  Inbound  access list is %s" % (interface.access_group_in if interface.access_group_in else u"not set"))
                                 if interface.vrf is not None:
-                                    self.write_line("  VPN Routing/Forwarding \"%s\"" % interface.vrf.name)
-            elif "route".startswith(args[1]):
-                if "static".startswith(args[2]):
+                                    self.write_line(u"  VPN Routing/Forwarding \"%s\"" % interface.vrf.name)
+            elif u"route".startswith(args[1]):
+                if u"static".startswith(args[2]):
                     routes = self.switch_configuration.static_routes
                     for route in routes:
-                        self.write_line("S        {0} [x/y] via {1}".format(route.destination, route.next_hop))
-                self.write_line("")
-        elif "version".startswith(args[0]):
+                        self.write_line(u"S        {0} [x/y] via {1}".format(route.destination, route.next_hop))
+                self.write_line(u"")
+        elif u"version".startswith(args[0]):
             self.show_version()
 
     def do_copy(self, source_url, destination_url):
-        dest_protocol, dest_file = destination_url.split(":")
-        self.write("Destination filename [%s]? " % strip_leading_slash(dest_file))
+        dest_protocol, dest_file = destination_url.split(u":")
+        self.write(u"Destination filename [%s]? " % strip_leading_slash(dest_file))
         self.continue_to(partial(self.continue_validate_copy, source_url))
 
     def continue_validate_copy(self, source_url, _):
-        self.write_line("Accessing %s..." % source_url)
+        self.write_line(u"Accessing %s..." % source_url)
         try:
-            url, filename = re.match('tftp://([^/]*)/(.*)', source_url).group(1, 2)
+            url, filename = re.match(u'tftp://([^/]*)/(.*)', source_url).group(1, 2)
             SwitchTftpParser(self.switch_configuration).parse(url, filename, ConfigCommandProcessor)
-            self.write_line("Done (or some official message...)")
+            self.write_line(u"Done (or some official message...)")
         except Exception as e:
-            self.logger.warning("tftp parsing went wrong : %s" % str(e))
-            self.write_line("Error opening %s (Timed out)" % source_url)
+            self.logger.warning(u"tftp parsing went wrong : %s" % str(e))
+            self.write_line(u"Error opening %s (Timed out)" % source_url)
 
     def do_terminal(self, *args):
         pass
 
     def do_write(self, *args):
-        self.write_line("Building configuration...")
+        self.write_line(u"Building configuration...")
         self.switch_configuration.commit()
-        self.write_line("OK")
+        self.write_line(u"OK")
 
     def do_exit(self):
         self.is_done = True
@@ -191,27 +191,27 @@ class EnabledCommandProcessor(BaseCommandProcessor):
     def show_run(self):
 
         all_data = [
-            "version 12.1",
-            "!",
-            "hostname %s" % self.switch_configuration.name,
-            "!",
-            "!",
+            u"version 12.1",
+            u"!",
+            u"hostname %s" % self.switch_configuration.name,
+            u"!",
+            u"!",
         ]
         for vlan in self.switch_configuration.vlans:
-            all_data = all_data + build_running_vlan(vlan) + ["!"]
-        for interface in sorted(self.switch_configuration.ports, key=lambda e: ("b" if isinstance(e, VlanPort) else "a") + e.name):
-            all_data = all_data + build_running_interface(interface) + ["!"]
+            all_data = all_data + build_running_vlan(vlan) + [u"!"]
+        for interface in sorted(self.switch_configuration.ports, key=lambda e: (u"b" if isinstance(e, VlanPort) else u"a") + e.name):
+            all_data = all_data + build_running_interface(interface) + [u"!"]
         if self.switch_configuration.static_routes:
             for route in self.switch_configuration.static_routes:
                 all_data.append(build_static_routes(route))
-            all_data.append("!")
+            all_data.append(u"!")
 
-        all_data += ["end", ""]
+        all_data += [u"end", u""]
 
-        self.write_line("Building configuration...")
-        self.write_line("")
+        self.write_line(u"Building configuration...")
+        self.write_line(u"")
 
-        self.write_line("Current configuration : %i bytes" % (len("\n".join(all_data)) + 1))
+        self.write_line(u"Current configuration : %i bytes" % (len(u"\n".join(all_data)) + 1))
         [self.write_line(l) for l in all_data]
 
     def show_version(self):
@@ -226,97 +226,97 @@ def strip_leading_slash(dest_file):
 
 
 def build_static_routes(route):
-    return "ip route {0} {1} {2}".format(route.destination, route.mask, route.next_hop)
+    return u"ip route {0} {1} {2}".format(route.destination, route.mask, route.next_hop)
 
 def build_running_vlan(vlan):
     data = [
-        "vlan %s" % vlan.number,
+        u"vlan %s" % vlan.number,
     ]
     if vlan.name:
-        data.append(" name %s" % vlan.name)
+        data.append(u" name %s" % vlan.name)
     return data
 
 
 def build_running_interface(port):
     data = [
-        "interface %s" % port.name
+        u"interface %s" % port.name
     ]
     if port.description:
-        data.append(" description %s" % port.description)
+        data.append(u" description %s" % port.description)
     if port.access_vlan and port.access_vlan != 1:
-        data.append(" switchport access vlan %s" % port.access_vlan)
+        data.append(u" switchport access vlan %s" % port.access_vlan)
     if port.trunk_encapsulation_mode is not None:
-        data.append(" switchport trunk encapsulation %s" % port.trunk_encapsulation_mode)
+        data.append(u" switchport trunk encapsulation %s" % port.trunk_encapsulation_mode)
     if port.trunk_native_vlan is not None:
-        data.append(" switchport trunk native vlan %s" % port.trunk_native_vlan)
+        data.append(u" switchport trunk native vlan %s" % port.trunk_native_vlan)
     if port.trunk_vlans is not None and len(port.trunk_vlans) < 4096 :
-        data.append(" switchport trunk allowed vlan %s" % to_vlan_ranges(port.trunk_vlans))
+        data.append(u" switchport trunk allowed vlan %s" % to_vlan_ranges(port.trunk_vlans))
     if port.mode:
-        data.append(" switchport mode %s" % port.mode)
+        data.append(u" switchport mode %s" % port.mode)
     if port.shutdown:
-        data.append(" shutdown")
+        data.append(u" shutdown")
     if port.aggregation_membership:
-        data.append(" channel-group %s mode active" % last_number(port.aggregation_membership))
+        data.append(u" channel-group %s mode active" % last_number(port.aggregation_membership))
     if port.vrf:
-        data.append(" ip vrf forwarding %s" % port.vrf.name)
+        data.append(u" ip vrf forwarding %s" % port.vrf.name)
     if isinstance(port, VlanPort):
         if len(port.ips) > 0:
             for ip in port.ips[1:]:
-                data.append(" ip address %s %s secondary" % (ip.ip, ip.netmask))
-            data.append(" ip address %s %s" % (port.ips[0].ip, port.ips[0].netmask))
+                data.append(u" ip address %s %s secondary" % (ip.ip, ip.netmask))
+            data.append(u" ip address %s %s" % (port.ips[0].ip, port.ips[0].netmask))
         else:
-            data.append(" no ip address")
+            data.append(u" no ip address")
         if port.access_group_in:
-            data.append(" ip access-group %s in" % port.access_group_in)
+            data.append(u" ip access-group %s in" % port.access_group_in)
         if port.access_group_out:
-            data.append(" ip access-group %s out" % port.access_group_out)
+            data.append(u" ip access-group %s out" % port.access_group_out)
         if port.ip_redirect is False:
-            data.append(" no ip redirects")
+            data.append(u" no ip redirects")
         for vrrp in port.vrrps:
             group = vrrp.group_id
             if vrrp.ip_addresses is not None:
                 if len(vrrp.ip_addresses) == 0:
-                    data.append(" standby {group} ip".format(group=group))
+                    data.append(u" standby {group} ip".format(group=group))
                 else:
                     for i, ip_address in enumerate(vrrp.ip_addresses):
-                        data.append(" standby {group} ip {ip_address}{secondary}".format(
-                                group=group, ip_address=ip_address, secondary=' secondary' if i > 0 else ''))
+                        data.append(u" standby {group} ip {ip_address}{secondary}".format(
+                                group=group, ip_address=ip_address, secondary=u' secondary' if i > 0 else u''))
             if vrrp.timers_hello is not None and vrrp.timers_hold is not None:
-                data.append(" standby {group} timers {hello_time} {hold_time}".format(group=group, hello_time=vrrp.timers_hello, hold_time=vrrp.timers_hold))
+                data.append(u" standby {group} timers {hello_time} {hold_time}".format(group=group, hello_time=vrrp.timers_hello, hold_time=vrrp.timers_hold))
             if vrrp.priority is not None:
-                data.append(" standby {group} priority {priority}".format(group=group, priority=vrrp.priority))
+                data.append(u" standby {group} priority {priority}".format(group=group, priority=vrrp.priority))
             if vrrp.preempt is not None:
                 if vrrp.preempt_delay_minimum is not None:
-                    data.append(" standby {group} preempt delay minimum {delay}".format(group=group, delay=vrrp.preempt_delay_minimum))
+                    data.append(u" standby {group} preempt delay minimum {delay}".format(group=group, delay=vrrp.preempt_delay_minimum))
                 else:
-                    data.append(" standby {group} preempt".format(group=group))
+                    data.append(u" standby {group} preempt".format(group=group))
             if vrrp.authentication is not None:
-                data.append(" standby {group} authentication {authentication}".format(group=group, authentication=vrrp.authentication))
+                data.append(u" standby {group} authentication {authentication}".format(group=group, authentication=vrrp.authentication))
             for track, decrement in sorted(vrrp.track.items()):
-                data.append(" standby {group} track {track} decrement {decrement}".format(group=group, track=track, decrement=decrement))
+                data.append(u" standby {group} track {track} decrement {decrement}".format(group=group, track=track, decrement=decrement))
         for ip_address in port.ip_helpers:
-            data.append(" ip helper-address {}".format(ip_address))
+            data.append(u" ip helper-address {}".format(ip_address))
     return data
 
 
 def vlan_name(vlan):
-    return vlan.name or ("default" if vlan.number == 1 else None)
+    return vlan.name or (u"default" if vlan.number == 1 else None)
 
 
 def to_vlan_ranges(vlans):
     if len(vlans) == 0:
-        return "none"
+        return u"none"
 
     ranges = group_sequences(vlans, are_in_sequence=lambda a, b: a + 1 == b)
 
-    return ",".join([to_range_string(r) for r in ranges])
+    return u",".join([to_range_string(r) for r in ranges])
 
 
 def to_range_string(array_range):
     if len(array_range) < 3:
-        return ",".join([str(n) for n in array_range])
+        return u",".join([str(n) for n in array_range])
     else:
-        return "%s-%s" % (array_range[0], array_range[-1])
+        return u"%s-%s" % (array_range[0], array_range[-1])
 
 
 def port_channel_number(port):
@@ -333,7 +333,7 @@ def short_name(port):
 
 
 def version_text(**kwargs):
-    return textwrap.dedent("""
+    return textwrap.dedent(u"""
         Cisco IOS Software, C3750 Software (C3750-IPSERVICESK9-M), Version 12.2(58)SE2, RELEASE SOFTWARE (fc1)
         Technical Support: http://www.cisco.com/techsupport
         Copyright (c) 1986-2011 by Cisco Systems, Inc.

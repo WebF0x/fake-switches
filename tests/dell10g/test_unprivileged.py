@@ -33,36 +33,36 @@ class Dell10GUnprivilegedTest(unittest.TestCase):
 
     @with_protocol
     def test_entering_enable_mode_requires_a_password(self, t):
-        t.write("enable")
-        t.read("Password:")
+        t.write(u"enable")
+        t.read(u"Password:")
         t.write_stars(dell10g_privileged_password)
-        t.read("\r\n")
-        t.read("my_switch#")
+        t.read(u"\r\n")
+        t.read(u"my_switch#")
 
     @with_protocol
     def test_wrong_password(self, t):
-        t.write("enable")
-        t.read("Password:")
-        t.write_stars("hello_world")
-        t.readln("Incorrect Password!")
-        t.read("my_switch>")
+        t.write(u"enable")
+        t.read(u"Password:")
+        t.write_stars(u"hello_world")
+        t.readln(u"Incorrect Password!")
+        t.read(u"my_switch>")
 
     @with_protocol
     def test_no_password_works_for_legacy_reasons(self, t):
-        t.write("enable")
-        t.read("Password:")
-        t.write_stars("")
-        t.read("\r\n")
-        t.read("my_switch#")
+        t.write(u"enable")
+        t.read(u"Password:")
+        t.write_stars(u"")
+        t.read(u"\r\n")
+        t.read(u"my_switch#")
 
     @with_protocol
     def test_exit_disconnects(self, t):
-        t.write("exit")
+        t.write(u"exit")
         t.read_eof()
 
     @with_protocol
     def test_quit_disconnects(self, t):
-        t.write("quit")
+        t.write(u"quit")
         t.read_eof()
 
 

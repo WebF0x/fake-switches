@@ -36,59 +36,59 @@ class DellConfigureTest(unittest.TestCase):
         enable(t)
         configure(t)
 
-        t.write("interface ethernet 1/g1")
-        t.readln("")
-        t.read("my_switch(config-if-1/g1)#")
+        t.write(u"interface ethernet 1/g1")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-1/g1)#")
 
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch(config)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
 
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch#")
 
     @with_protocol
     def test_entering_vlan_database_mode(self, t):
         enable(t)
         configure(t)
 
-        t.write("vlan database")
-        t.readln("")
-        t.read("my_switch(config-vlan)#")
+        t.write(u"vlan database")
+        t.readln(u"")
+        t.read(u"my_switch(config-vlan)#")
 
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch(config)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
 
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch#")
 
     @with_protocol
     def test_editing_vlan(self, t):
         enable(t)
         configure(t)
 
-        t.write("interface vlan 1260")
-        t.readln("VLAN ID not found.")
-        t.readln("")
+        t.write(u"interface vlan 1260")
+        t.readln(u"VLAN ID not found.")
+        t.readln(u"")
 
-        t.read("my_switch(config)#")
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch#")
+        t.read(u"my_switch(config)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch#")
 
         configuring_vlan(t, 1260)
 
         configure(t)
-        t.write("interface vlan 1260")
-        t.readln("")
-        t.read("my_switch(config-if-vlan1260)#")
+        t.write(u"interface vlan 1260")
+        t.readln(u"")
+        t.read(u"my_switch(config-if-vlan1260)#")
 
-        t.write("exit")
-        t.readln("")
-        t.read("my_switch(config)#")
+        t.write(u"exit")
+        t.readln(u"")
+        t.read(u"my_switch(config)#")
 
         unconfigure_vlan(t, 1260)
 

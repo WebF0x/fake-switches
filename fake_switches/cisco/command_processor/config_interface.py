@@ -23,53 +23,53 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
 
     def __init__(self, switch_configuration, terminal_controller, logger, piping_processor, port):
         BaseCommandProcessor.__init__(self, switch_configuration, terminal_controller, logger, piping_processor)
-        self.description_strip_chars = "\""
+        self.description_strip_chars = u"\""
         self.port = port
 
     def get_prompt(self):
-        return self.switch_configuration.name + "(config-if)#"
+        return self.switch_configuration.name + u"(config-if)#"
 
     def do_switchport(self, *args):
-        if args[0:1] == ("mode",):
+        if args[0:1] == (u"mode",):
             self.port.mode = args[1]
-        elif args[0:2] == ("access", "vlan"):
+        elif args[0:2] == (u"access", u"vlan"):
             self.port.access_vlan = int(args[2])
-        elif args[0:2] == ("trunk", "encapsulation"):
+        elif args[0:2] == (u"trunk", u"encapsulation"):
             self.port.trunk_encapsulation_mode = args[2]
-        elif args[0:4] == ("trunk", "allowed", "vlan", "add"):
+        elif args[0:4] == (u"trunk", u"allowed", u"vlan", u"add"):
             if self.port.trunk_vlans is not None: #for cisco, no list = all vlans
                 self.port.trunk_vlans += parse_vlan_list(args[4])
-        elif args[0:4] == ("trunk", "allowed", "vlan", "remove"):
+        elif args[0:4] == (u"trunk", u"allowed", u"vlan", u"remove"):
             if self.port.trunk_vlans is None:
                 self.port.trunk_vlans = list(range(1, 4097))
             for v in parse_vlan_list(args[4]):
                 if v in self.port.trunk_vlans:
                     self.port.trunk_vlans.remove(v)
-        elif args[0:4] == ("trunk", "allowed", "vlan", "none"):
+        elif args[0:4] == (u"trunk", u"allowed", u"vlan", u"none"):
             self.port.trunk_vlans = []
-        elif args[0:4] == ("trunk", "allowed", "vlan", "all"):
+        elif args[0:4] == (u"trunk", u"allowed", u"vlan", u"all"):
             self.port.trunk_vlans = None
-        elif args[0:3] == ("trunk", "allowed", "vlan"):
+        elif args[0:3] == (u"trunk", u"allowed", u"vlan"):
             self.port.trunk_vlans = parse_vlan_list(args[3])
-        elif args[0:3] == ("trunk", "native", "vlan"):
+        elif args[0:3] == (u"trunk", u"native", u"vlan"):
             self.port.trunk_native_vlan = int(args[3])
 
     def do_no_switchport(self, *args):
-        if args[0:2] == ("access", "vlan"):
+        if args[0:2] == (u"access", u"vlan"):
             self.port.access_vlan = None
-        elif args[0:1] == ("mode",):
+        elif args[0:1] == (u"mode",):
             self.port.mode = None
-        elif args[0:3] == ("trunk", "allowed", "vlan"):
+        elif args[0:3] == (u"trunk", u"allowed", u"vlan"):
             self.port.trunk_vlans = None
-        elif args[0:3] == ("trunk", "native", "vlan"):
+        elif args[0:3] == (u"trunk", u"native", u"vlan"):
             self.port.trunk_native_vlan = None
 
     def do_channel_group(self, *args):
         port_channel_id = args[0]
-        port_channel_name = "Port-channel%s" % port_channel_id
+        port_channel_name = u"Port-channel%s" % port_channel_id
 
         if not self.port_channel_exists(port_channel_name):
-            self.write_line("Creating a port-channel interface Port-channel %s" % port_channel_id)
+            self.write_line(u"Creating a port-channel interface Port-channel %s" % port_channel_id)
             self.create_port_channel(port_channel_name)
         self.port.aggregation_membership = port_channel_name
 
@@ -77,7 +77,7 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
         self.port.aggregation_membership = None
 
     def do_description(self, *args):
-        self.port.description = " ".join(args).strip(self.description_strip_chars)
+        self.port.description = u" ".join(args).strip(self.description_strip_chars)
 
     def do_no_description(self, *_):
         self.port.description = None
@@ -90,11 +90,11 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
 
     def do_ip(self, *args):
 
-        if "address".startswith(args[0]):
-            new_ip = IPNetwork("%s/%s" % (args[1], args[2]))
+        if u"address".startswith(args[0]):
+            new_ip = IPNetwork(u"%s/%s" % (args[1], args[2]))
             ip_owner, existing_ip = self.switch_configuration.get_port_and_ip_by_ip(new_ip.ip)
             if not ip_owner or ip_owner == self.port:
-                if len(args) == 4 and "secondary".startswith(args[3]):
+                if len(args) == 4 and u"secondary".startswith(args[3]):
                     self.port.add_ip(new_ip)
                 else:
                     if len(self.port.ips) == 0:
@@ -105,18 +105,18 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
                         self.port.ips[0] = new_ip
             else:
                 if ip_owner.ips.index(existing_ip) == 0:
-                    self.write_line("%% %s overlaps with secondary address on %s" % (existing_ip.network, ip_owner.name))
+                    self.write_line(u"%% %s overlaps with secondary address on %s" % (existing_ip.network, ip_owner.name))
                 else:
-                    self.write_line("%% %s is assigned as a secondary address on %s" % (existing_ip.network, ip_owner.name))
+                    self.write_line(u"%% %s is assigned as a secondary address on %s" % (existing_ip.network, ip_owner.name))
 
-        if "access-group".startswith(args[0]):
-            if "in".startswith(args[2]):
+        if u"access-group".startswith(args[0]):
+            if u"in".startswith(args[2]):
                 self.port.access_group_in = args[1]
-            if "out".startswith(args[2]):
+            if u"out".startswith(args[2]):
                 self.port.access_group_out = args[1]
 
-        if "vrf".startswith(args[0]):
-            if "forwarding".startswith(args[1]):
+        if u"vrf".startswith(args[0]):
+            if u"forwarding".startswith(args[1]):
                 if isinstance(self.port, VlanPort):
                     for ip in self.port.ips[:]:
                         self.port.remove_ip(ip)
@@ -124,54 +124,54 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
                 if vrf:
                     self.port.vrf = vrf
                 else:
-                    self.write_line("%% VRF %s not configured." % args[2])
-        if "redirects".startswith(args[0]):
+                    self.write_line(u"%% VRF %s not configured." % args[2])
+        if u"redirects".startswith(args[0]):
             self.port.ip_redirect = True
 
-        if "helper-address".startswith(args[0]):
+        if u"helper-address".startswith(args[0]):
             if len(args) == 1:
-                self.write_line("% Incomplete command.")
-                self.write_line("")
+                self.write_line(u"% Incomplete command.")
+                self.write_line(u"")
             elif len(args) > 2:
-                self.write_line(" ^")
-                self.write_line("% Invalid input detected at '^' marker.")
-                self.write_line("")
+                self.write_line(u" ^")
+                self.write_line(u"% Invalid input detected at '^' marker.")
+                self.write_line(u"")
             else:
                 ip_address = IPAddress(args[1])
                 if ip_address not in self.port.ip_helpers:
                     self.port.ip_helpers.append(ip_address)
 
     def do_no_ip(self, *args):
-        if "address".startswith(args[0]):
+        if u"address".startswith(args[0]):
             if len(args) == 1:
                 self.port.ips = []
             else:
-                ip = IPNetwork("%s/%s" % (args[1], args[2]))
-                is_secondary = "secondary".startswith(args[3]) if len(args) == 4 else False
+                ip = IPNetwork(u"%s/%s" % (args[1], args[2]))
+                is_secondary = u"secondary".startswith(args[3]) if len(args) == 4 else False
                 if is_secondary:
                     self.port.remove_ip(ip)
                 else:
                     if len(self.port.ips) == 1:
                         self.port.remove_ip(ip)
                     else:
-                        self.write_line("Must delete secondary before deleting primary")
-        if "access-group".startswith(args[0]):
+                        self.write_line(u"Must delete secondary before deleting primary")
+        if u"access-group".startswith(args[0]):
             direction = args[-1]
-            if "in".startswith(direction):
+            if u"in".startswith(direction):
                 self.port.access_group_in = None
-            elif "out".startswith(direction):
+            elif u"out".startswith(direction):
                 self.port.access_group_out = None
-        if "vrf".startswith(args[0]):
-            if "forwarding".startswith(args[1]):
+        if u"vrf".startswith(args[0]):
+            if u"forwarding".startswith(args[1]):
                 self.port.vrf = None
-        if "redirects".startswith(args[0]):
+        if u"redirects".startswith(args[0]):
             self.port.ip_redirect = False
 
-        if "helper-address".startswith(args[0]):
+        if u"helper-address".startswith(args[0]):
             if len(args) > 2:
-                self.write_line(" ^")
-                self.write_line("% Invalid input detected at '^' marker.")
-                self.write_line("")
+                self.write_line(u" ^")
+                self.write_line(u"% Invalid input detected at '^' marker.")
+                self.write_line(u"")
             else:
                 if len(args) == 1:
                     self.port.ip_helpers = []
@@ -183,10 +183,10 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
     def do_standby(self, group, command, *args):
         vrrp = self.port.get_vrrp_group(group)
         if vrrp is None:
-            vrrp = self.switch_configuration.new("VRRP", group)
+            vrrp = self.switch_configuration.new(u"VRRP", group)
             self.port.vrrps.append(vrrp)
 
-        if "ip".startswith(command):
+        if u"ip".startswith(command):
             if len(args) == 0:
                 vrrp.ip_addresses = vrrp.ip_addresses or []
             else:
@@ -195,34 +195,34 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
                     in_networks = any(ip in net for net in self.port.ips)
                     if in_networks:
                         vrrp.ip_addresses = vrrp.ip_addresses or []
-                        if len(args) > 1 and "secondary".startswith(args[1]):
+                        if len(args) > 1 and u"secondary".startswith(args[1]):
                             vrrp.ip_addresses.append(ip)
                         else:
                             vrrp.ip_addresses = [ip] + vrrp.ip_addresses[1:]
                     else:
-                        self.write_line("% Warning: address is not within a subnet on this interface")
+                        self.write_line(u"% Warning: address is not within a subnet on this interface")
 
                 else:
-                    self.write_line(" ^")
-                    self.write_line("% Invalid input detected at '^' marker.")
-                    self.write_line("")
+                    self.write_line(u" ^")
+                    self.write_line(u"% Invalid input detected at '^' marker.")
+                    self.write_line(u"")
 
-        if "timers".startswith(command):
+        if u"timers".startswith(command):
             vrrp.timers_hello = args[0]
             vrrp.timers_hold = args[1]
 
-        if "priority".startswith(command):
+        if u"priority".startswith(command):
             vrrp.priority = args[0]
 
-        if "authentication".startswith(command):
+        if u"authentication".startswith(command):
             vrrp.authentication = args[0]
 
-        if "track".startswith(command) and "decrement".startswith(args[1]):
+        if u"track".startswith(command) and u"decrement".startswith(args[1]):
             vrrp.track.update({args[0]: args[2]})
 
-        if "preempt".startswith(command):
+        if u"preempt".startswith(command):
             vrrp.preempt = True
-            if len(args) > 0 and " ".join(args[0:2]) == "delay minimum":
+            if len(args) > 0 and u" ".join(args[0:2]) == u"delay minimum":
                 vrrp.preempt_delay_minimum = args[2]
 
     def do_no_standby(self, group, *cmd_args):
@@ -238,7 +238,7 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
             command = cmd_args[0]
             args = cmd_args[1:]
 
-            if "ip".startswith(command):
+            if u"ip".startswith(command):
                 if len(args) == 0:
                     vrrp.ip_addresses = None
                 else:
@@ -246,21 +246,21 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
                     if len(vrrp.ip_addresses) == 0:
                         vrrp.ip_addresses = None
 
-            if "authentication".startswith(command):
+            if u"authentication".startswith(command):
                 vrrp.authentication = None
 
-            if "priority".startswith(command):
+            if u"priority".startswith(command):
                 vrrp.priority = None
 
-            if "timers".startswith(command):
+            if u"timers".startswith(command):
                 vrrp.timers_hello = None
                 vrrp.timers_hold = None
 
-            if "track".startswith(command) and args[0] in vrrp.track:
+            if u"track".startswith(command) and args[0] in vrrp.track:
                 del vrrp.track[args[0]]
 
-            if "preempt".startswith(command):
-                if len(args) > 0 and "delay".startswith(args[0]):
+            if u"preempt".startswith(command):
+                if len(args) > 0 and u"delay".startswith(args[0]):
                     vrrp.preempt_delay_minimum = None
                 else:
                     vrrp.preempt_delay_minimum = None
@@ -273,16 +273,16 @@ class ConfigInterfaceCommandProcessor(BaseCommandProcessor):
         return self.switch_configuration.get_port_by_partial_name(name) is not None
 
     def create_port_channel(self, name):
-        port = self.switch_configuration.new("AggregatedPort", name)
+        port = self.switch_configuration.new(u"AggregatedPort", name)
         self.port.switch_configuration.add_port(port)
 
 
 def parse_vlan_list(param):
-    ranges = param.split(",")
+    ranges = param.split(u",")
     vlans = []
     for r in ranges:
-        if "-" in r:
-            start, stop = r.split("-")
+        if u"-" in r:
+            start, stop = r.split(u"-")
             vlans += [v for v in range(int(start), int(stop) + 1)]
         else:
             vlans.append(int(r))

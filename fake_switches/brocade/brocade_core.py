@@ -23,7 +23,7 @@ from fake_switches.terminal import LoggingTerminalController
 class BrocadeSwitchCore(object):
     def __init__(self, switch_configuration):
         self.switch_configuration = switch_configuration
-        self.switch_configuration.add_vlan(self.switch_configuration.new("Vlan", 1))
+        self.switch_configuration.add_vlan(self.switch_configuration.new(u"Vlan", 1))
         self.logger = None
         self.last_connection_id = 0
 
@@ -31,7 +31,7 @@ class BrocadeSwitchCore(object):
         self.last_connection_id += 1
 
         self.logger = logging.getLogger(
-            "fake_switches.brocade.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
+            u"fake_switches.brocade.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
 
         command_processor = DefaultCommandProcessor(
             switch_configuration=self.switch_configuration,
@@ -47,4 +47,4 @@ class BrocadeSwitchCore(object):
 
 class BrocadeShellSession(ShellSession):
     def handle_unknown_command(self, line):
-        self.command_processor.terminal_controller.write("Invalid input -> %s\nType ? for a list\n" % line)
+        self.command_processor.terminal_controller.write(u"Invalid input -> %s\nType ? for a list\n" % line)

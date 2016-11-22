@@ -25,11 +25,11 @@ class SwitchSSHShell(recvline.HistoricRecvLine):
 
     # Hack to get rid of magical characters that reset the screen / clear / goto position 0, 0
     def initializeScreen(self):
-        self.mode = 'insert'
+        self.mode = u'insert'
 
     def connectionMade(self):
         recvline.HistoricRecvLine.connectionMade(self)
-        self.session = self.switch_core.launch("ssh", SshTerminalController(
+        self.session = self.switch_core.launch(u"ssh", SshTerminalController(
             shell=self
         ))
 
@@ -60,7 +60,7 @@ class SwitchSSHShell(recvline.HistoricRecvLine):
         else:
             self.terminal.write((len(ch) * command_processor.replace_input).encode())
 
-        if self.mode == 'insert':
+        if self.mode == u'insert':
             self.lineBuffer.insert(self.lineBufferIndex, ch)
         else:
             self.lineBuffer[self.lineBufferIndex:self.lineBufferIndex+1] = [ch]

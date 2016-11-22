@@ -23,23 +23,23 @@ from fake_switches.switch_configuration import VlanPort, AggregatedPort
 
 class ConfigCommandProcessor(BaseCommandProcessor):
     config_interface_processor = ConfigInterfaceCommandProcessor
-    interface_separator = ""
+    interface_separator = u""
 
     def get_prompt(self):
-        return self.switch_configuration.name + "(config)#"
+        return self.switch_configuration.name + u"(config)#"
 
     def do_vlan(self, raw_number, *_):
         number = int(raw_number)
         if number < 0:
-            self.write_line("Command rejected: Bad VLAN list - character #1 ('-') delimits a VLAN number")
-            self.write_line(" which is out of the range 1..4094.")
+            self.write_line(u"Command rejected: Bad VLAN list - character #1 ('-') delimits a VLAN number")
+            self.write_line(u" which is out of the range 1..4094.")
         elif number < 1 or number > 4094:
-            self.write_line("Command rejected: Bad VLAN list - character #X (EOL) delimits a VLAN")
-            self.write_line("number which is out of the range 1..4094.")
+            self.write_line(u"Command rejected: Bad VLAN list - character #X (EOL) delimits a VLAN")
+            self.write_line(u"number which is out of the range 1..4094.")
         else:
             vlan = self.switch_configuration.get_vlan(number)
             if not vlan:
-                vlan = self.switch_configuration.new("Vlan", number)
+                vlan = self.switch_configuration.new(u"Vlan", number)
                 self.switch_configuration.add_vlan(vlan)
             self.move_to(ConfigVlanCommandProcessor, vlan)
 
@@ -49,18 +49,18 @@ class ConfigCommandProcessor(BaseCommandProcessor):
             self.switch_configuration.remove_vlan(vlan)
 
     def do_no_ip(self, cmd, *args):
-        if "vrf".startswith(cmd):
+        if u"vrf".startswith(cmd):
             self.switch_configuration.remove_vrf(args[0])
-        elif "route".startswith(cmd):
+        elif u"route".startswith(cmd):
             self.switch_configuration.remove_static_route(args[0], args[1])
 
     def do_ip(self, cmd, *args):
-        if "vrf".startswith(cmd):
-            vrf = self.switch_configuration.new("VRF", args[0])
+        if u"vrf".startswith(cmd):
+            vrf = self.switch_configuration.new(u"VRF", args[0])
             self.switch_configuration.add_vrf(vrf)
             self.move_to(ConfigVRFCommandProcessor, vrf)
-        elif "route".startswith(cmd):
-            static_route = self.switch_configuration.new("Route", *args)
+        elif u"route".startswith(cmd):
+            static_route = self.switch_configuration.new(u"Route", *args)
             self.switch_configuration.add_static_route(static_route)
 
     def do_interface(self, *args):
@@ -69,13 +69,13 @@ class ConfigCommandProcessor(BaseCommandProcessor):
         if port:
             self.move_to(self.config_interface_processor, port)
         else:
-            m = re.match("vlan{separator}(\d+)".format(separator=self.interface_separator), interface_name.lower())
+            m = re.match(u"vlan{separator}(\d+)".format(separator=self.interface_separator), interface_name.lower())
             if m:
                 vlan_id = int(m.groups()[0])
                 new_vlan_interface = self.make_vlan_port(vlan_id, interface_name)
                 self.switch_configuration.add_port(new_vlan_interface)
                 self.move_to(self.config_interface_processor, new_vlan_interface)
-            elif interface_name.lower().startswith('port-channel'):
+            elif interface_name.lower().startswith(u'port-channel'):
                 new_int = self.make_aggregated_port(interface_name)
                 self.switch_configuration.add_port(new_int)
                 self.move_to(self.config_interface_processor, new_int)
@@ -83,12 +83,12 @@ class ConfigCommandProcessor(BaseCommandProcessor):
                 self.show_unknown_interface_error_message()
 
     def do_no_interface(self, *args):
-        port = self.switch_configuration.get_port_by_partial_name("".join(args))
+        port = self.switch_configuration.get_port_by_partial_name(u"".join(args))
         if isinstance(port, VlanPort) or isinstance(port, AggregatedPort):
             self.switch_configuration.remove_port(port)
 
     def do_default(self, cmd, *args):
-        if 'interface'.startswith(cmd):
+        if u'interface'.startswith(cmd):
             interface_name = self.interface_separator.join(args)
             port = self.switch_configuration.get_port_by_partial_name(interface_name)
             if port:
@@ -100,12 +100,12 @@ class ConfigCommandProcessor(BaseCommandProcessor):
         self.is_done = True
 
     def show_unknown_interface_error_message(self):
-        self.write_line("              ^")
-        self.write_line("% Invalid input detected at '^' marker (not such interface)")
-        self.write_line("")
+        self.write_line(u"              ^")
+        self.write_line(u"% Invalid input detected at '^' marker (not such interface)")
+        self.write_line(u"")
 
     def make_vlan_port(self, vlan_id, interface_name):
-        return self.switch_configuration.new("VlanPort", vlan_id, interface_name.capitalize())
+        return self.switch_configuration.new(u"VlanPort", vlan_id, interface_name.capitalize())
 
     def make_aggregated_port(self, interface_name):
-        return self.switch_configuration.new("AggregatedPort", interface_name.capitalize())
+        return self.switch_configuration.new(u"AggregatedPort", interface_name.capitalize())

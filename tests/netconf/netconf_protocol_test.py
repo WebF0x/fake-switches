@@ -19,7 +19,7 @@ class NetconfProtocolTest(unittest.TestCase):
     def test_says_hello_upon_connection_and_receive_an_hello(self):
         self.netconf.connectionMade()
 
-        self.assert_xml_response("""
+        self.assert_xml_response(u"""
             <hello>
               <session-id>1</session-id>
               <capabilities>
@@ -32,12 +32,12 @@ class NetconfProtocolTest(unittest.TestCase):
         self.netconf.connectionMade()
         self.say_hello()
 
-        self.netconf.dataReceived('<nc:rpc xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="12345">\n')
-        self.netconf.dataReceived('  <nc:close-session/>\n')
-        self.netconf.dataReceived('</nc:rpc>\n')
-        self.netconf.dataReceived(']]>]]>\n')
+        self.netconf.dataReceived(u'<nc:rpc xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="12345">\n')
+        self.netconf.dataReceived(u'  <nc:close-session/>\n')
+        self.netconf.dataReceived(u'</nc:rpc>\n')
+        self.netconf.dataReceived(u']]>]]>\n')
 
-        self.assert_xml_response("""
+        self.assert_xml_response(u"""
             <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="12345">
                 <ok/>
             </rpc-reply>
@@ -45,11 +45,11 @@ class NetconfProtocolTest(unittest.TestCase):
         self.netconf.transport.loseConnection.assert_called_with()
 
     def test_get_config_support(self):
-        self.netconf.datastore.set_data(RUNNING, {"configuration": {"stuff": "is cool!"}})
+        self.netconf.datastore.set_data(RUNNING, {u"configuration": {u"stuff": u"is cool!"}})
         self.netconf.connectionMade()
         self.say_hello()
 
-        self.netconf.dataReceived("""
+        self.netconf.dataReceived(u"""
             <rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
               <get-config>
                 <source><running /></source>
@@ -57,7 +57,7 @@ class NetconfProtocolTest(unittest.TestCase):
             </rpc>
             ]]>]]>""")
 
-        self.assert_xml_response("""
+        self.assert_xml_response(u"""
             <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
                 <data>
                   <configuration>
@@ -70,11 +70,11 @@ class NetconfProtocolTest(unittest.TestCase):
         assert_that(self.netconf.transport.loseConnection.called, equal_to(False))
 
     def test_request_with_namespace(self):
-        self.netconf.datastore.set_data(RUNNING, {"configuration": {"stuff": "is cool!"}})
+        self.netconf.datastore.set_data(RUNNING, {u"configuration": {u"stuff": u"is cool!"}})
         self.netconf.connectionMade()
         self.say_hello()
 
-        self.netconf.dataReceived("""
+        self.netconf.dataReceived(u"""
             <nc:rpc xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
               <nc:get-config>
                 <nc:source><nc:running/></nc:source>
@@ -82,7 +82,7 @@ class NetconfProtocolTest(unittest.TestCase):
             </nc:rpc>
             ]]>]]>""")
 
-        self.assert_xml_response("""
+        self.assert_xml_response(u"""
             <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
                 <data>
                   <configuration>
@@ -93,11 +93,11 @@ class NetconfProtocolTest(unittest.TestCase):
             """)
 
     def test_edit_config(self):
-        self.netconf.datastore.set_data(RUNNING, {"configuration": {"stuff": {"substuff": "is cool!"}}})
+        self.netconf.datastore.set_data(RUNNING, {u"configuration": {u"stuff": {u"substuff": u"is cool!"}}})
         self.netconf.connectionMade()
         self.say_hello()
 
-        data = """<?xml version="1.0" encoding="UTF-8"?>
+        data = u"""<?xml version="1.0" encoding="UTF-8"?>
             <nc:rpc xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="urn:uuid:346c9f18-c420-11e4-8e4c-fa163ecd3b0a">
                 <nc:edit-config>
                     <nc:target>
@@ -110,7 +110,7 @@ class NetconfProtocolTest(unittest.TestCase):
             </nc:rpc>]]>]]>"""
         self.netconf.dataReceived(data)
 
-        self.assert_xml_response("""
+        self.assert_xml_response(u"""
             <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="urn:uuid:346c9f18-c420-11e4-8e4c-fa163ecd3b0a">
                 <ok/>
             </rpc-reply>
@@ -118,13 +118,13 @@ class NetconfProtocolTest(unittest.TestCase):
 
     def test_reply_includes_additional_namespaces(self):
         self.netconf.additionnal_namespaces = {
-            "junos": "http://xml.juniper.net/junos/11.4R1/junos",
-            "nc": "urn:ietf:params:xml:ns:netconf:base:1.0",
+            u"junos": u"http://xml.juniper.net/junos/11.4R1/junos",
+            u"nc": u"urn:ietf:params:xml:ns:netconf:base:1.0",
         }
         self.netconf.connectionMade()
         self.say_hello()
 
-        self.netconf.dataReceived("""
+        self.netconf.dataReceived(u"""
             <nc:rpc xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
               <nc:get-config>
                 <nc:source><nc:running/></nc:source>
@@ -132,7 +132,7 @@ class NetconfProtocolTest(unittest.TestCase):
             </nc:rpc>
             ]]>]]>""")
 
-        assert_that(self.netconf.transport.write.call_args[0][0].decode(), xml_equals_to("""
+        assert_that(self.netconf.transport.write.call_args[0][0].decode(), xml_equals_to(u"""
             <rpc-reply xmlns:junos="http://xml.juniper.net/junos/11.4R1/junos" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="67890">
               <data/>
             </rpc-reply>
@@ -142,67 +142,67 @@ class NetconfProtocolTest(unittest.TestCase):
 
     def test_filtering(self):
         content = dict_2_etree({
-            "data": {
-                "configuration": [
-                    {"shizzle": {
-                        "whizzle": {}
+            u"data": {
+                u"configuration": [
+                    {u"shizzle": {
+                        u"whizzle": {}
                     }},
-                    {"shizzle": {
-                        "whizzle": {
-                            "howdy": {}
+                    {u"shizzle": {
+                        u"whizzle": {
+                            u"howdy": {}
                         },
-                        "not-whizzle": {
-                            "not-howdy": {}
+                        u"not-whizzle": {
+                            u"not-howdy": {}
                         }
                     }},
-                    {"zizzle": {
-                        "nothing": {}
+                    {u"zizzle": {
+                        u"nothing": {}
                     }},
-                    {"outzzle": {
-                        "nothing": {}
+                    {u"outzzle": {
+                        u"nothing": {}
                     }}
                 ]
             }
         })
 
         content_filter = dict_2_etree({
-            "filter": {
-                "configuration": {
-                    "shizzle": {"whizzle": {}},
-                    "zizzle": {},
+            u"filter": {
+                u"configuration": {
+                    u"shizzle": {u"whizzle": {}},
+                    u"zizzle": {},
                 }
             }
         })
 
         filter_content(content, content_filter)
 
-        assert_that(content.xpath("//data/configuration/shizzle"), has_length(2))
-        assert_that(content.xpath("//data/configuration/shizzle/*"), has_length(2))
-        assert_that(content.xpath("//data/configuration/shizzle/whizzle/howdy"), has_length(1))
-        assert_that(content.xpath("//data/configuration/zizzle"), has_length(1))
-        assert_that(content.xpath("//data/configuration/outzzle"), has_length(0))
+        assert_that(content.xpath(u"//data/configuration/shizzle"), has_length(2))
+        assert_that(content.xpath(u"//data/configuration/shizzle/*"), has_length(2))
+        assert_that(content.xpath(u"//data/configuration/shizzle/whizzle/howdy"), has_length(1))
+        assert_that(content.xpath(u"//data/configuration/zizzle"), has_length(1))
+        assert_that(content.xpath(u"//data/configuration/outzzle"), has_length(0))
 
     def test_filtering_with_a_value(self):
         content = dict_2_etree({
-            "data": {
-                "configuration": [
-                    {"element": {
-                        "element-key": "MY-KEY",
-                        "attribute": {"sub-attribute": {}}
+            u"data": {
+                u"configuration": [
+                    {u"element": {
+                        u"element-key": u"MY-KEY",
+                        u"attribute": {u"sub-attribute": {}}
                     }},
-                    {"element": {
-                        "element-key": "MY-OTHER-KEY",
-                        "other-attribute": {"sub-attribute": {}}
+                    {u"element": {
+                        u"element-key": u"MY-OTHER-KEY",
+                        u"other-attribute": {u"sub-attribute": {}}
                     }},
                 ]
             }
         })
 
         content_filter = dict_2_etree({
-            "filter": {
-                "configuration": {
-                    "element": {
-                        "element-key": "MY-KEY"
+            u"filter": {
+                u"configuration": {
+                    u"element": {
+                        u"element-key": u"MY-KEY"
                     },
                 }
             }
@@ -210,18 +210,18 @@ class NetconfProtocolTest(unittest.TestCase):
 
         filter_content(content, content_filter)
 
-        assert_that(content.xpath("//data/configuration/element"), has_length(1))
-        assert_that(content.xpath("//data/configuration/element/*"), has_length(2))
-        assert_that(content.xpath("//data/configuration/element/attribute/*"), has_length(1))
+        assert_that(content.xpath(u"//data/configuration/element"), has_length(1))
+        assert_that(content.xpath(u"//data/configuration/element/*"), has_length(2))
+        assert_that(content.xpath(u"//data/configuration/element/attribute/*"), has_length(1))
 
     def say_hello(self):
         self.netconf.dataReceived(
-            '<hello xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><capabilities><capability>urn:ietf:params:xml:ns:netconf:base:1.0</capability></capabilities></hello>]]>]]>')
+            u'<hello xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><capabilities><capability>urn:ietf:params:xml:ns:netconf:base:1.0</capability></capabilities></hello>]]>]]>')
 
     def assert_xml_response(self, expected):
         data = self.netconf.transport.write.call_args[0][0].decode()
-        assert_that(data, ends_with("]]>]]>\n"))
-        data = data.replace("]]>]]>", "")
+        assert_that(data, ends_with(u"]]>]]>\n"))
+        data = data.replace(u"]]>]]>", u"")
         assert_that(data, xml_equals_to(expected))
 
 
@@ -248,15 +248,15 @@ class XmlEqualsToMatcher(BaseMatcher):
 
     def describe_mismatch(self, item, mismatch_description):
         itemxml = item if not isinstance(item, str) else to_ele(item)
-        mismatch_description.append_text("WAS : \n" + to_xml(itemxml, pretty_print=True) + "\n\n")
-        mismatch_description.append_text("IN WHICH : " + str(self.last_error))
+        mismatch_description.append_text(u"WAS : \n" + to_xml(itemxml, pretty_print=True) + u"\n\n")
+        mismatch_description.append_text(u"IN WHICH : " + str(self.last_error))
 
     def compare_nodes(self, actual_node, node):
         assert_that(unqualify(node.tag), equal_to(unqualify(actual_node.tag)))
         assert_that(node, has_length(len(actual_node)))
         if node.text is not None:
-            if node.text.strip() == "":
-                assert_that(actual_node.text is None or actual_node.text.strip() == "")
+            if node.text.strip() == u"":
+                assert_that(actual_node.text is None or actual_node.text.strip() == u"")
             else:
                 assert_that(node.text.strip(), equal_to(actual_node.text.strip()))
         for name, value in node.attrib.items():
@@ -275,7 +275,7 @@ class XmlEqualsToMatcher(BaseMatcher):
 
 
 def unqualify(tag):
-    return re.sub("\{[^\}]*\}", "", tag)
+    return re.sub(u"\{[^\}]*\}", u"", tag)
 
 
 def get_children_by_unqualified_tag(tag, node, excluding):
@@ -283,4 +283,4 @@ def get_children_by_unqualified_tag(tag, node, excluding):
         if child not in excluding and unqualify(child.tag) == tag:
             return child
 
-    raise AssertionError("Missing element {} in {}".format(tag, to_xml(node, pretty_print=True)))
+    raise AssertionError(u"Missing element {} in {}".format(tag, to_xml(node, pretty_print=True)))

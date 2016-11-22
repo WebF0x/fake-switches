@@ -37,38 +37,38 @@ class JuniperBaseProtocolWithCommitDelayTest(unittest.TestCase):
         return manager.connect(
             host=juniper_switch_ip,
             port=juniper_switch_netconf_with_commit_delay_port,
-            username="root",
-            password="root",
+            username=u"root",
+            password=u"root",
             hostkey_verify=False,
-            device_params={'name': 'junos'}
+            device_params={u'name': u'junos'}
         )
 
     def test_lock_edit_candidate_add_vlan_and_commit_with_commit_delay(self):
-        with self.nc.locked(target='candidate'):
-            result = self.nc.edit_config(target='candidate', config=dict_2_etree({
-                "config": {
-                    "configuration": {
-                        "vlans": {
-                            "vlan": {
-                                "name": "VLAN2999",
+        with self.nc.locked(target=u'candidate'):
+            result = self.nc.edit_config(target=u'candidate', config=dict_2_etree({
+                u"config": {
+                    u"configuration": {
+                        u"vlans": {
+                            u"vlan": {
+                                u"name": u"VLAN2999",
                                 }
                         }
                     }
                 }}))
-            assert_that(result.xpath("//rpc-reply/ok"), has_length(1))
+            assert_that(result.xpath(u"//rpc-reply/ok"), has_length(1))
 
             result = self.nc.commit()
-            assert_that(result.xpath("//rpc-reply/ok"), has_length(1))
+            assert_that(result.xpath(u"//rpc-reply/ok"), has_length(1))
 
-        result = self.nc.get_config(source="running")
+        result = self.nc.get_config(source=u"running")
 
-        assert_that(result.xpath("data/configuration/vlans/vlan"), has_length(1))
+        assert_that(result.xpath(u"data/configuration/vlans/vlan"), has_length(1))
 
         self.edit({
-            "vlans": {
-                "vlan": {
-                    XML_ATTRIBUTES: {"operation": "delete"},
-                    "name": "VLAN2999"
+            u"vlans": {
+                u"vlan": {
+                    XML_ATTRIBUTES: {u"operation": u"delete"},
+                    u"name": u"VLAN2999"
                 }
             }
         })
@@ -77,16 +77,16 @@ class JuniperBaseProtocolWithCommitDelayTest(unittest.TestCase):
         self.nc.commit()
         end_time = time()
 
-        result = self.nc.get_config(source="running")
+        result = self.nc.get_config(source=u"running")
 
-        assert_that(result.xpath("data/configuration/vlans/vlan"), has_length(0))
+        assert_that(result.xpath(u"data/configuration/vlans/vlan"), has_length(0))
         assert_that((end_time - start_time), greater_than(COMMIT_DELAY))
 
     def edit(self, config):
-        result = self.nc.edit_config(target="candidate", config=dict_2_etree({
-            "config": {
-                "configuration": config
+        result = self.nc.edit_config(target=u"candidate", config=dict_2_etree({
+            u"config": {
+                u"configuration": config
             }
         }))
 
-        assert_that(result.xpath("//rpc-reply/ok"), has_length(1))
+        assert_that(result.xpath(u"//rpc-reply/ok"), has_length(1))

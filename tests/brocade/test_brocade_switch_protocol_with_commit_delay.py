@@ -24,7 +24,7 @@ from tests.util.protocol_util import SshTester, with_protocol
 
 class TestBrocadeSwitchProtocolWithCommitDelay(unittest.TestCase):
     def setUp(self):
-        self.protocol = SshTester("ssh", brocade_switch_ip, brocade_switch_with_commit_delay_ssh_port, 'root', 'root')
+        self.protocol = SshTester(u"ssh", brocade_switch_ip, brocade_switch_with_commit_delay_ssh_port, u'root', u'root')
 
     def tearDown(self):
         flexmock_teardown()
@@ -36,8 +36,8 @@ class TestBrocadeSwitchProtocolWithCommitDelay(unittest.TestCase):
 
         start_time = time.time()
 
-        t.write("write memory")
-        t.read("SSH@my_switch#")
+        t.write(u"write memory")
+        t.read(u"SSH@my_switch#")
 
         end_time = time.time()
 
@@ -45,7 +45,7 @@ class TestBrocadeSwitchProtocolWithCommitDelay(unittest.TestCase):
 
 
 def enable(t):
-    t.write("enable")
-    t.read("Password:")
+    t.write(u"enable")
+    t.read(u"Password:")
     t.write_invisible(brocade_privileged_password)
-    t.read("SSH@my_switch#")
+    t.read(u"SSH@my_switch#")

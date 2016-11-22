@@ -18,8 +18,8 @@ from fake_switches.command_processing.piping_processor_base import PipingProcess
 class PipingProcessor(PipingProcessorBase):
 
     def do_begin(self, *args):
-        return StartOutputAt(" ".join(args))
+        return StartOutputAt(u" ".join(args))
 
     def do_include(self, *args):
-        return Grep(" ".join(args))
+        return Grep(u" ".join(args))
 

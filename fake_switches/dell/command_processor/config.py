@@ -22,36 +22,36 @@ from fake_switches.dell.command_processor.config_vlan import \
 
 class DellConfigCommandProcessor(ConfigCommandProcessor):
     config_interface_processor = DellConfigInterfaceCommandProcessor
-    interface_separator = ' '
+    interface_separator = u' '
 
     def get_prompt(self):
-        return "\n" + self.switch_configuration.name + "(config)#"
+        return u"\n" + self.switch_configuration.name + u"(config)#"
 
     def do_vlan(self, *args):
-        if "database".startswith(args[0]):
+        if u"database".startswith(args[0]):
             self.move_to(DellConfigureVlanCommandProcessor)
 
     def do_interface(self, *args):
-        if 'vlan'.startswith(args[0]):
+        if u'vlan'.startswith(args[0]):
             vlan_id = int(args[1])
             vlan = self.switch_configuration.get_vlan(vlan_id)
             if vlan is None:
-                self.write_line("VLAN ID not found.")
+                self.write_line(u"VLAN ID not found.")
                 return
-        self.write_line("")
+        self.write_line(u"")
         super(DellConfigCommandProcessor, self).do_interface(*args)
 
     def do_backdoor(self, *args):
-        if 'remove'.startswith(args[0]) and 'port-channel'.startswith(args[1]):
+        if u'remove'.startswith(args[0]) and u'port-channel'.startswith(args[1]):
             self.switch_configuration.remove_port(
-                self.switch_configuration.get_port_by_partial_name(" ".join(args[1:3])))
+                self.switch_configuration.get_port_by_partial_name(u" ".join(args[1:3])))
 
     def do_exit(self):
-        self.write_line("")
+        self.write_line(u"")
         self.is_done = True
 
     def make_vlan_port(self, vlan_id, interface_name):
-        return self.switch_configuration.new("VlanPort", vlan_id, interface_name)
+        return self.switch_configuration.new(u"VlanPort", vlan_id, interface_name)
 
     def make_aggregated_port(self, interface_name):
-        return self.switch_configuration.new("AggregatedPort", interface_name)
+        return self.switch_configuration.new(u"AggregatedPort", interface_name)

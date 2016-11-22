@@ -13,9 +13,9 @@ class XPathMatcher(BaseMatcher):
         self.matcher = matcher
 
     def _matches(self, other):
-        assert_that(other, is_(not_(None)), "Lookup node doesn't exist")
+        assert_that(other, is_(not_(None)), u"Lookup node doesn't exist")
         nodes = other.xpath(self.xpath)
-        assert_that(nodes, has_length(1), "Nodes length should be 1 element")
+        assert_that(nodes, has_length(1), u"Nodes length should be 1 element")
         assert_that(nodes[0].text, self.matcher)
         return True
 

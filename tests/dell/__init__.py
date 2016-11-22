@@ -21,196 +21,196 @@ from tests.util.protocol_util import SshTester, TelnetTester
 
 
 def ssh_protocol_factory(*_):
-    return SshTester("ssh", dell_switch_ip, dell_switch_ssh_port, 'root', 'root')
+    return SshTester(u"ssh", dell_switch_ip, dell_switch_ssh_port, u'root', u'root')
 
 
 def telnet_protocol_factory(*_):
-    return TelnetTester("ssh", dell_switch_ip, dell_switch_telnet_port, 'root', 'root')
+    return TelnetTester(u"ssh", dell_switch_ip, dell_switch_telnet_port, u'root', u'root')
 
 
 def enable(t):
-    t.write("enable")
-    t.read("Password:")
+    t.write(u"enable")
+    t.read(u"Password:")
     t.write_stars(dell_privileged_password)
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configure(t):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
 
 
 def configuring_interface(t, interface, do):
-    interface_short_name = interface.split(' ')[1]
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface %s" % interface)
-    t.readln("")
-    t.read("my_switch(config-if-%s)#" % interface_short_name)
+    interface_short_name = interface.split(u' ')[1]
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface %s" % interface)
+    t.readln(u"")
+    t.read(u"my_switch(config-if-%s)#" % interface_short_name)
 
     t.write(do)
 
-    t.readln("")
-    t.read("my_switch(config-if-%s)#" % interface_short_name)
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch(config-if-%s)#" % interface_short_name)
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring_bond(t, bond, do):
-    bond_number = bond.split(' ')[1]
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface %s" % bond)
-    t.readln("")
-    t.read("my_switch(config-if-ch%s)#" % bond_number)
+    bond_number = bond.split(u' ')[1]
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface %s" % bond)
+    t.readln(u"")
+    t.read(u"my_switch(config-if-ch%s)#" % bond_number)
 
     t.write(do)
 
-    t.readln("")
-    t.read("my_switch(config-if-ch%s)#" % bond_number)
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch(config-if-ch%s)#" % bond_number)
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring_a_vlan_on_interface(t, interface, do):
-    interface_short_name = interface.split(' ')[1]
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface %s" % interface)
-    t.readln("")
-    t.read("my_switch(config-if-%s)#" % interface_short_name)
+    interface_short_name = interface.split(u' ')[1]
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface %s" % interface)
+    t.readln(u"")
+    t.read(u"my_switch(config-if-%s)#" % interface_short_name)
 
     t.write(do)
 
-    t.readln("Warning: The use of large numbers of VLANs or interfaces may cause significant")
-    t.readln("delays in applying the configuration.")
-    t.readln("")
-    t.readln("")
-    t.read("my_switch(config-if-%s)#" % interface_short_name)
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"Warning: The use of large numbers of VLANs or interfaces may cause significant")
+    t.readln(u"delays in applying the configuration.")
+    t.readln(u"")
+    t.readln(u"")
+    t.read(u"my_switch(config-if-%s)#" % interface_short_name)
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring_interface_vlan(t, vlan, do):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface vlan {}".format(vlan))
-    t.readln("")
-    t.read("my_switch(config-if-vlan{})#".format(vlan))
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface vlan {}".format(vlan))
+    t.readln(u"")
+    t.read(u"my_switch(config-if-vlan{})#".format(vlan))
 
     t.write(do)
 
-    t.readln("")
-    t.read("my_switch(config-if-vlan{})#".format(vlan))
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch(config-if-vlan{})#".format(vlan))
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring_vlan(t, vlan_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
 
-    t.write("vlan database")
-    t.readln("")
-    t.read("my_switch(config-vlan)#")
+    t.write(u"vlan database")
+    t.readln(u"")
+    t.read(u"my_switch(config-vlan)#")
 
-    t.write("vlan %s" % vlan_id)
-    t.readln("Warning: The use of large numbers of VLANs or interfaces may cause significant")
-    t.readln("delays in applying the configuration.")
-    t.readln("")
+    t.write(u"vlan %s" % vlan_id)
+    t.readln(u"Warning: The use of large numbers of VLANs or interfaces may cause significant")
+    t.readln(u"delays in applying the configuration.")
+    t.readln(u"")
 
-    t.readln("")
-    t.read("my_switch(config-vlan)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch(config-vlan)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def unconfigure_vlan(t, vlan_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
 
-    t.write("vlan database")
-    t.readln("")
-    t.read("my_switch(config-vlan)#")
+    t.write(u"vlan database")
+    t.readln(u"")
+    t.read(u"my_switch(config-vlan)#")
 
-    t.write("no vlan %s" % vlan_id)
-    t.readln("Warning: The use of large numbers of VLANs or interfaces may cause significant")
-    t.readln("delays in applying the configuration.")
-    t.readln("")
-    t.readln("If any of the VLANs being deleted are for access ports, the ports will be")
-    t.readln("unusable until it is assigned a VLAN that exists.")
-    t.readln("")
+    t.write(u"no vlan %s" % vlan_id)
+    t.readln(u"Warning: The use of large numbers of VLANs or interfaces may cause significant")
+    t.readln(u"delays in applying the configuration.")
+    t.readln(u"")
+    t.readln(u"If any of the VLANs being deleted are for access ports, the ports will be")
+    t.readln(u"unusable until it is assigned a VLAN that exists.")
+    t.readln(u"")
 
-    t.read("my_switch(config-vlan)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.read(u"my_switch(config-vlan)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def create_bond(t, bond_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface port-channel {}".format(bond_id))
-    t.readln("")
-    t.read("my_switch(config-if-ch{})#".format(bond_id))
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface port-channel {}".format(bond_id))
+    t.readln(u"")
+    t.read(u"my_switch(config-if-ch{})#".format(bond_id))
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def remove_bond(t, bond_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("no interface port-channel {}".format(bond_id))
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"no interface port-channel {}".format(bond_id))
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def assert_interface_configuration(t, interface, config):
-    t.write("show running-config interface %s " % interface)
+    t.write(u"show running-config interface %s " % interface)
     for line in config:
         t.readln(line)
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def assert_running_config_contains_in_order(t, lines):
@@ -220,8 +220,8 @@ def assert_running_config_contains_in_order(t, lines):
 
 
 def get_running_config(t):
-    t.write("show running-config")
-    config = t.read_lines_until('my_switch#')
+    t.write(u"show running-config")
+    config = t.read_lines_until(u'my_switch#')
     return config
 
 
@@ -234,5 +234,5 @@ def assert_lines_order(config, lines):
         actual_content = config[expected_line_number]
 
         assert_that(actual_content, is_(expected_content),
-                    "Item <%s> was expected to be found at line %s but found %s instead.\nWas looking for %s in %s" % (
+                    u"Item <%s> was expected to be found at line %s but found %s instead.\nWas looking for %s in %s" % (
                         line, expected_line_number, actual_content, pprint.pformat(lines), pprint.pformat(config)))

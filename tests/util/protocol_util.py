@@ -10,11 +10,11 @@ import re
 def with_protocol(test):
     def wrapper(self):
         try:
-            logging.info(">>>> CONNECTING [%s]" % self.protocol.name)
+            logging.info(u">>>> CONNECTING [%s]" % self.protocol.name)
             self.protocol.connect()
-            logging.info(">>>> START")
+            logging.info(u">>>> START")
             test(self, self.protocol)
-            logging.info(">>>> SUCCESS")
+            logging.info(u">>>> SUCCESS")
         finally:
             self.protocol.disconnect()
 
@@ -48,7 +48,7 @@ class ProtocolTester(object):
         self.child = pexpect.spawn(self.get_ssh_connect_command())
         self.child.delaybeforesend = 0.0005
         self.child.logfile = None
-        self.child.logfile_read = LoggingFileInterface(prefix="[%s] " % self.name)
+        self.child.logfile_read = LoggingFileInterface(prefix=u"[%s] " % self.name)
         self.child.timeout = 1
         self.login()
 
@@ -62,68 +62,59 @@ class ProtocolTester(object):
         pass
 
     def read(self, expected, regex=False):
-        assert(isinstance(expected, str))
         self.wait_for(expected, regex)
         assert_that(self.child.before, equal_to(b""))
 
     def readln(self, expected, regex=False):
-        assert(isinstance(expected, str))
-        self.read(expected + "\r\n", regex=regex)
+        self.read(expected + u"\r\n", regex=regex)
 
     def read_lines_until(self, expected):
-        assert(isinstance(expected, str))
         self.wait_for(expected)
-        lines = self.child.before.decode().split('\r\n')
+        lines = self.child.before.decode().split(u'\r\n')
         return lines
 
     def read_eof(self):
         self.child.expect(pexpect.EOF)
 
     def wait_for(self, expected, regex=False):
-        assert(isinstance(expected, str))
         pattern = re.escape(expected) if not regex else expected
-        assert(isinstance(pattern, str))
         self.child.expect(pattern)
 
     def write(self, data):
-        assert(isinstance(data, str))
         self.child.sendline(data.encode())
-        self.read(data + "\r\n")
+        self.read(data + u"\r\n")
 
     def write_invisible(self, data):
-        assert(isinstance(data, str))
         self.child.sendline(data.encode())
-        self.read("\r\n")
+        self.read(u"\r\n")
 
     def write_stars(self, data):
-        assert(isinstance(data, str))
         self.child.sendline(data.encode())
-        self.read(len(data) * "*" + "\r\n")
+        self.read(len(data) * u"*" + u"\r\n")
 
     def write_raw(self, data):
-        assert(isinstance(data, str))
         self.child.send(data.encode())
 
 
 class SshTester(ProtocolTester):
     def get_ssh_connect_command(self):
-        return 'ssh %s@%s -p %s -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+        return u'ssh %s@%s -p %s -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
                % (self.username, self.host, self.port)
 
     def login(self):
-        self.wait_for('[pP]assword: ', regex=True)
+        self.wait_for(u'[pP]assword: ', regex=True)
         self.write_invisible(self.password)
-        self.wait_for('[>#]$', regex=True)
+        self.wait_for(u'[>#]$', regex=True)
 
 
 class TelnetTester(ProtocolTester):
     def get_ssh_connect_command(self):
-        return 'telnet %s %s' \
+        return u'telnet %s %s' \
                % (self.host, self.port)
 
     def login(self):
-        self.wait_for("Username: ")
+        self.wait_for(u"Username: ")
         self.write(self.username)
-        self.wait_for("[pP]assword: ", True)
+        self.wait_for(u"[pP]assword: ", True)
         self.write_invisible(self.password)
-        self.wait_for('[>#]$', regex=True)
+        self.wait_for(u'[>#]$', regex=True)

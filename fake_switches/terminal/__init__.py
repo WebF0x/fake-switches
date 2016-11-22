@@ -18,12 +18,12 @@ import re
 def lf_to_crlf(text):
     nb_subst = 1
     while nb_subst:
-        text, nb_subst = re.subn("(^|[^\r])\n", "\\1\r\n", text)
+        text, nb_subst = re.subn(u"(^|[^\r])\n", u"\\1\r\n", text)
     return text
 
 
 class TerminalController(object):
-    """
+    u"""
     Allow a command processor to interact with the actual terminal.  Actually
     it is possible to write text on the terminal and intercept key strokes.
 
@@ -42,14 +42,14 @@ class TerminalController(object):
     """
 
     def write(self, text):
-        """
+        u"""
         Write text on the terminal.  Some implementation may replace the text
         before it is sent to the terminal (by adding '\r' before each '\n').
         """
         raise NotImplemented()
 
     def add_any_key_handler(self, callback, *params):
-        """
+        u"""
         Registers a function as a callback to intercept every "printable"
         keystroke.
 
@@ -59,7 +59,7 @@ class TerminalController(object):
         raise NotImplemented()
 
     def remove_any_key_handler(self):
-        """
+        u"""
         Remove the keystroke interceptor and resume normal behavior.
 
         When an interceptor is in place no character is echoed on the terminal
@@ -71,7 +71,7 @@ class TerminalController(object):
 class LoggingTerminalController(TerminalController):
 
     def __init__(self, logger, terminal_controller):
-        """
+        u"""
         :param logger: log everything written on the terminal as debug
         :type logger: logging.Logger
         :param terminal_controller: the real terminal controller
@@ -81,7 +81,7 @@ class LoggingTerminalController(TerminalController):
         self.terminal_controller = terminal_controller
 
     def write(self, text):
-        self.logger.debug("replying: %s" % repr(text))
+        self.logger.debug(u"replying: %s" % repr(text))
         return self.terminal_controller.write(text)
 
     def add_any_key_handler(self, callback, *params):

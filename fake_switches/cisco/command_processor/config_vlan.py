@@ -22,7 +22,7 @@ class ConfigVlanCommandProcessor(BaseCommandProcessor):
         self.vlan = vlan
 
     def get_prompt(self):
-        return self.switch_configuration.name + "(config-vlan)#"
+        return self.switch_configuration.name + u"(config-vlan)#"
 
     def do_name(self, *args):
         self.vlan.name = (args[0][:32])

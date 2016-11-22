@@ -24,7 +24,7 @@ from fake_switches.terminal import LoggingTerminalController
 class CiscoSwitchCore(object):
     def __init__(self, switch_configuration):
         self.switch_configuration = switch_configuration
-        self.switch_configuration.add_vlan(self.switch_configuration.new("Vlan", 1))
+        self.switch_configuration.add_vlan(self.switch_configuration.new(u"Vlan", 1))
 
         self.logger = None
         self.last_connection_id = 0
@@ -32,7 +32,7 @@ class CiscoSwitchCore(object):
     def launch(self, protocol, terminal_controller):
         self.last_connection_id += 1
 
-        self.logger = logging.getLogger("fake_switches.cisco.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
+        self.logger = logging.getLogger(u"fake_switches.cisco.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
         if self.switch_configuration.auto_enabled:
             processor = EnabledCommandProcessor
         else:
@@ -51,7 +51,7 @@ class CiscoSwitchCore(object):
 
 class CiscoShellSession(ShellSession):
     def handle_unknown_command(self, line):
-        self.command_processor.terminal_controller.write("No such command : %s\n" % line)
+        self.command_processor.terminal_controller.write(u"No such command : %s\n" % line)
 
 
 

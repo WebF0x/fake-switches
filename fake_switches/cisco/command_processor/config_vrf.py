@@ -22,7 +22,7 @@ class ConfigVRFCommandProcessor(BaseCommandProcessor):
         self.vrf = vrf
 
     def get_prompt(self):
-        return self.switch_configuration.name + "(config-vrf)#"
+        return self.switch_configuration.name + u"(config-vrf)#"
 
     def do_exit(self):
         self.is_done = True

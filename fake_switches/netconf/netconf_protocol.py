@@ -24,9 +24,9 @@ from fake_switches.netconf.capabilities import Base1_0
 
 class NetconfProtocol(Protocol):
     def __init__(self, datastore=None, capabilities=None, additionnal_namespaces=None, logger=None):
-        self.logger = logger or logging.getLogger("fake_switches.netconf")
+        self.logger = logger or logging.getLogger(u"fake_switches.netconf")
 
-        self.input_buffer = ""
+        self.input_buffer = u""
         self.session_count = 0
         self.been_greeted = False
 
@@ -40,38 +40,36 @@ class NetconfProtocol(Protocol):
         return self
 
     def connectionMade(self):
-        self.logger.info("Connected, sending <hello>")
+        self.logger.info(u"Connected, sending <hello>")
 
         self.session_count += 1
 
         self.say(dict_2_etree({
-            "hello": [
-                {"session-id": str(self.session_count)},
-                {"capabilities": [{"capability": cap.get_url()} for cap in self.capabilities]}
+            u"hello": [
+                {u"session-id": str(self.session_count)},
+                {u"capabilities": [{u"capability": cap.get_url()} for cap in self.capabilities]}
             ]
         }))
 
     def dataReceived(self, data):
         if isinstance(data, bytes):
             data = data.decode()
-        assert(isinstance(data, str))
-        self.logger.info("Received : %s" % repr(data))
+        self.logger.info(u"Received : %s" % repr(data))
         self.input_buffer += data
-        if self.input_buffer.rstrip().endswith("]]>]]>"):
+        if self.input_buffer.rstrip().endswith(u"]]>]]>"):
             self.process(self.input_buffer.rstrip()[0:-6])
-            self.input_buffer = ""
+            self.input_buffer = u""
 
     def process(self, data):
-        assert(isinstance(data, str))
         if not self.been_greeted:
-            self.logger.info("Client's greeting received")
+            self.logger.info(u"Client's greeting received")
             self.been_greeted = True
             return
 
         xml_request_root = remove_namespaces(etree.fromstring(data.encode()))
-        message_id = xml_request_root.get("message-id")
+        message_id = xml_request_root.get(u"message-id")
         operation = xml_request_root[0]
-        self.logger.info("Operation requested %s" % repr(operation.tag))
+        self.logger.info(u"Operation requested %s" % repr(operation.tag))
 
         handled = False
         operation_name = normalize_operation_name(operation)
@@ -91,33 +89,33 @@ class NetconfProtocol(Protocol):
             self.reply(message_id, error_to_response(OperationNotSupported(operation_name)))
 
     def reply(self, message_id, response):
-        reply = etree.Element("rpc-reply", xmlns=NS_BASE_1_0, nsmap=self.additionnal_namespaces)
-        reply.attrib["message-id"] = message_id
+        reply = etree.Element(u"rpc-reply", xmlns=NS_BASE_1_0, nsmap=self.additionnal_namespaces)
+        reply.attrib[u"message-id"] = message_id
         for ele in response.elements:
             reply.append(ele)
 
         self.say(reply)
 
         if response.require_disconnect:
-            self.logger.info("Disconnecting")
+            self.logger.info(u"Disconnecting")
             self.transport.loseConnection()
 
     def say(self, etree_root):
-        self.logger.info("Saying : %s" % repr(etree.tostring(etree_root)))
+        self.logger.info(u"Saying : %s" % repr(etree.tostring(etree_root)))
         self.transport.write(etree.tostring(etree_root, pretty_print=True) + b"]]>]]>\n")
 
 
 def error_to_rpcerror_dict(error):
     error_specs = {
-        "error-message": str(error)
+        u"error-message": str(error)
     }
 
-    if error.path: error_specs["error-path"] = error.path
-    if error.type: error_specs["error-type"] = error.type
-    if error.tag: error_specs["error-tag"] = error.tag
-    if error.severity: error_specs["error-severity"] = error.severity
-    if error.info: error_specs["error-info"] = error.info
-    return {"rpc-error": error_specs}
+    if error.path: error_specs[u"error-path"] = error.path
+    if error.type: error_specs[u"error-type"] = error.type
+    if error.tag: error_specs[u"error-tag"] = error.tag
+    if error.severity: error_specs[u"error-severity"] = error.severity
+    if error.info: error_specs[u"error-info"] = error.info
+    return {u"rpc-error": error_specs}
 
 
 def error_to_response(error):
@@ -129,7 +127,7 @@ def errors_to_response(errors):
 
 
 def commit_results_error_to_response(commit_results_error):
-    return Response(dict_2_etree({'commit-results': [error_to_rpcerror_dict(e) for e in commit_results_error.netconf_errors]}))
+    return Response(dict_2_etree({u'commit-results': [error_to_rpcerror_dict(e) for e in commit_results_error.netconf_errors]}))
 
 
 def remove_namespaces(xml_root):
@@ -139,4 +137,4 @@ def remove_namespaces(xml_root):
     return xml_root
 
 def unqualify(tag):
-    return re.sub("\{[^\}]*\}", "", tag)
+    return re.sub(u"\{[^\}]*\}", u"", tag)

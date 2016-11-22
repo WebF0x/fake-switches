@@ -25,7 +25,7 @@ from fake_switches.terminal import LoggingTerminalController
 class Dell10GSwitchCore(DellSwitchCore):
     def launch(self, protocol, terminal_controller):
         self.last_connection_id += 1
-        self.logger = logging.getLogger("fake_switches.dell10g.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
+        self.logger = logging.getLogger(u"fake_switches.dell10g.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
 
         command_processor = Dell10GDefaultCommandProcessor(
             switch_configuration=self.switch_configuration,

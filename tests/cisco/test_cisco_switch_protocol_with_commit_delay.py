@@ -27,7 +27,7 @@ from tests.util.protocol_util import SshTester, with_protocol
 class TestCiscoSwitchProtocolWithCommitDelay(unittest.TestCase):
 
     def create_client(self):
-        return SshTester("ssh", cisco_switch_ip, cisco_switch_ssh_with_commit_delay_port, 'root', 'root')
+        return SshTester(u"ssh", cisco_switch_ip, cisco_switch_ssh_with_commit_delay_port, u'root', u'root')
 
     def setUp(self):
         self.protocol = self.create_client()
@@ -40,17 +40,17 @@ class TestCiscoSwitchProtocolWithCommitDelay(unittest.TestCase):
         t.child.timeout = 10
         enable(t)
         start_time = time()
-        t.write("write memory")
-        t.readln("Building configuration...")
-        t.readln("OK")
-        t.read("my_switch#")
+        t.write(u"write memory")
+        t.readln(u"Building configuration...")
+        t.readln(u"OK")
+        t.read(u"my_switch#")
         end_time = time()
 
         assert_that((end_time - start_time), greater_than(COMMIT_DELAY))
 
 
 def enable(t):
-    t.write("enable")
-    t.read("Password: ")
+    t.write(u"enable")
+    t.read(u"Password: ")
     t.write_invisible(cisco_privileged_password)
-    t.read("my_switch#")
+    t.read(u"my_switch#")

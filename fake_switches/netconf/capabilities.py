@@ -29,45 +29,45 @@ class Base1_0(Capability):
         return NS_BASE_1_0
 
     def get_config(self, request):
-        source = first(request.xpath("source"))
+        source = first(request.xpath(u"source"))
         content = self.datastore.to_etree(resolve_source_name(source[0].tag))
-        filtering = first(request.xpath("filter"))
+        filtering = first(request.xpath(u"filter"))
         if filtering is not None:
             filter_content(content, filtering)
         return Response(content)
 
     def close_session(self, _):
-        return Response(etree.Element("ok"), require_disconnect=True)
+        return Response(etree.Element(u"ok"), require_disconnect=True)
 
     def lock(self, request):
-        target = first(request.xpath("target"))
+        target = first(request.xpath(u"target"))
         self.datastore.lock(resolve_source_name(target[0].tag))
-        return Response(etree.Element("ok"))
+        return Response(etree.Element(u"ok"))
 
     def unlock(self, request):
-        target = first(request.xpath("target"))
+        target = first(request.xpath(u"target"))
         self.datastore.unlock(resolve_source_name(target[0].tag))
-        return Response(etree.Element("ok"))
+        return Response(etree.Element(u"ok"))
 
     def discard_changes(self, _):
         self.datastore.reset()
-        return Response(etree.Element("ok"))
+        return Response(etree.Element(u"ok"))
 
     def edit_config(self, request):
-        target = first(request.xpath("target"))
-        config = first(request.xpath("config"))
+        target = first(request.xpath(u"target"))
+        config = first(request.xpath(u"config"))
         self.datastore.edit(resolve_source_name(target[0].tag), config[0])
 
-        return Response(etree.Element("ok"))
+        return Response(etree.Element(u"ok"))
 
     def commit(self, _):
         self.datastore.commit_candidate()
-        self.datastore.configurations.get('candidate').commit()
-        return Response(etree.Element("ok"))
+        self.datastore.configurations.get(u'candidate').commit()
+        return Response(etree.Element(u"ok"))
 
 
 def filter_content(content, filtering):
-    valid_xpaths = list(crawl_for_leaves(filtering, base="//data"))
+    valid_xpaths = list(crawl_for_leaves(filtering, base=u"//data"))
     valid_endpoints = []
     valid_endpoints_parents = []
     for xpath in valid_xpaths:
@@ -83,10 +83,10 @@ def filter_content(content, filtering):
 
 def crawl_for_leaves(root, base):
     for e in root:
-        new_base = "%s/%s" % (base, e.tag)
+        new_base = u"%s/%s" % (base, e.tag)
         if len(e) == 0:
             if e.text:
-                yield new_base + "[text()=\"%s\"]/.." % e.text
+                yield new_base + u"[text()=\"%s\"]/.." % e.text
             else:
                 yield new_base
         else:
@@ -105,21 +105,21 @@ def filter_by_valid_nodes(content, valid_endpoints, valid_endpoints_parents):
 
 class Candidate1_0(Capability):
     def get_url(self):
-        return "urn:ietf:params:xml:ns:netconf:capability:candidate:1.0"
+        return u"urn:ietf:params:xml:ns:netconf:capability:candidate:1.0"
 
 
 class ConfirmedCommit1_0(Capability):
     def get_url(self):
-        return "urn:ietf:params:xml:ns:netconf:capability:confirmed-commit:1.0"
+        return u"urn:ietf:params:xml:ns:netconf:capability:confirmed-commit:1.0"
 
 
 class Validate1_0(Capability):
     def get_url(self):
-        return "urn:ietf:params:xml:ns:netconf:capability:validate:1.0"
+        return u"urn:ietf:params:xml:ns:netconf:capability:validate:1.0"
 
 
 class Url1_0(Capability):
     def get_url(self):
-        return "urn:ietf:params:xml:ns:netconf:capability:url:1.0?protocol=http,ftp,file"
+        return u"urn:ietf:params:xml:ns:netconf:capability:url:1.0?protocol=http,ftp,file"
 
 

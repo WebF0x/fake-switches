@@ -18,7 +18,7 @@ import re
 
 
 class SwitchConfiguration(object):
-    def __init__(self, ip, name="", auto_enabled=False, privileged_passwords=None, ports=None, vlans=None, objects_overrides=None, commit_delay=0):
+    def __init__(self, ip, name=u"", auto_enabled=False, privileged_passwords=None, ports=None, vlans=None, objects_overrides=None, commit_delay=0):
         self.ip = ip
         self.name = name
         self.privileged_passwords = privileged_passwords or []
@@ -26,16 +26,16 @@ class SwitchConfiguration(object):
         self.vlans = []
         self.ports = []
         self.static_routes = []
-        self.vrfs = [VRF('DEFAULT-LAN')]
+        self.vrfs = [VRF(u'DEFAULT-LAN')]
         self.locked = False
         self.objects_factory = {
-            "Route": Route,
-            "VRF": VRF,
-            "Vlan": Vlan,
-            "Port": Port,
-            "VRRP": VRRP,
-            "VlanPort": VlanPort,
-            "AggregatedPort": AggregatedPort,
+            u"Route": Route,
+            u"VRF": VRF,
+            u"Vlan": Vlan,
+            u"Port": Port,
+            u"VRRP": VRRP,
+            u"VlanPort": VlanPort,
+            u"AggregatedPort": AggregatedPort,
         }
         self.commit_delay = commit_delay
 
@@ -53,7 +53,7 @@ class SwitchConfiguration(object):
         self.static_routes.append(route)
 
     def remove_static_route(self, destination, mask):
-        subnet = IPNetwork("{}/{}".format(destination, mask))
+        subnet = IPNetwork(u"{}/{}".format(destination, mask))
         route = next(route for route in self.static_routes if route.dest == subnet)
         self.static_routes.remove(route)
 
@@ -126,7 +126,7 @@ class VRF(object):
 
 class Route(object):
     def __init__(self, destination, mask, next_hop):
-        self.dest = IPNetwork("{}/{}".format(destination, mask))
+        self.dest = IPNetwork(u"{}/{}".format(destination, mask))
         self.next_hop = IPAddress(next_hop)
 
     @property
@@ -246,5 +246,5 @@ class AggregatedPort(Port):
 
 
 def split_port_name(name):
-    number_start, number_len = re.compile('\d').search(name).span()
+    number_start, number_len = re.compile(u'\d').search(name).span()
     return name[0:number_start], name[number_start:]

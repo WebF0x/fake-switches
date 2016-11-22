@@ -24,7 +24,7 @@ def read_tftp(server, remote_filename, port=69):
 
 class FakeFile(object):
     def __init__(self):
-        self.content = ""
+        self.content = u""
         self.closed = True
 
     def write(self, data):

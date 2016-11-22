@@ -34,11 +34,11 @@ class RegexStringContains(SubstringMatcher):
         return re.search(self.substring, item) is not None
 
     def relationship(self):
-        return 'containing regex'
+        return u'containing regex'
 
 
 def contains_regex(substring):
-    """Matches if object is a string containing a given string.
+    u"""Matches if object is a string containing a given string.
 
     :param substring: The regex string to search for.
     """

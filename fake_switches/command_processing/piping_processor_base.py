@@ -25,7 +25,7 @@ class PipingProcessorBase(CommandProcessor):
         func, args = self.get_command_func(command)
 
         if not func:
-            self.logger.debug("%s can't process piping : %s" % (self.__class__.__name__, command))
+            self.logger.debug(u"%s can't process piping : %s" % (self.__class__.__name__, command))
             return False
 
         self.active_command = func(*args)

@@ -27,7 +27,7 @@ from fake_switches.terminal import LoggingTerminalController
 class DellSwitchCore(BrocadeSwitchCore):
     def launch(self, protocol, terminal_controller):
         self.last_connection_id += 1
-        self.logger = logging.getLogger("fake_switches.dell.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
+        self.logger = logging.getLogger(u"fake_switches.dell.%s.%s.%s" % (self.switch_configuration.name, self.last_connection_id, protocol))
 
         command_processor = DellDefaultCommandProcessor(
             switch_configuration=self.switch_configuration,
@@ -40,6 +40,6 @@ class DellSwitchCore(BrocadeSwitchCore):
 
 class DellShellSession(ShellSession):
     def handle_unknown_command(self, line):
-        self.command_processor.terminal_controller.write("          ^\n")
-        self.command_processor.terminal_controller.write("% Invalid input detected at '^' marker.\n")
-        self.command_processor.terminal_controller.write("\n")
+        self.command_processor.terminal_controller.write(u"          ^\n")
+        self.command_processor.terminal_controller.write(u"% Invalid input detected at '^' marker.\n")
+        self.command_processor.terminal_controller.write(u"\n")

@@ -22,126 +22,126 @@ from tests.util.protocol_util import SshTester, TelnetTester
 
 
 def ssh_protocol_factory(*_):
-    return SshTester("ssh", dell10g_switch_ip, dell10g_switch_ssh_port, 'root', 'root')
+    return SshTester(u"ssh", dell10g_switch_ip, dell10g_switch_ssh_port, u'root', u'root')
 
 
 def telnet_protocol_factory(*_):
-    return TelnetTester("ssh", dell10g_switch_ip, dell10g_switch_telnet_port, 'root', 'root')
+    return TelnetTester(u"ssh", dell10g_switch_ip, dell10g_switch_telnet_port, u'root', u'root')
 
 
 def enable(t):
-    t.write("enable")
-    t.read("Password:")
+    t.write(u"enable")
+    t.read(u"Password:")
     t.write_stars(dell10g_privileged_password)
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring(t, do):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
 
     t.write(do)
 
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def add_vlan(t, vlan_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("vlan {}".format(vlan_id))
-    t.readln("")
-    t.read("my_switch(config-vlan{})#".format(vlan_id))
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"vlan {}".format(vlan_id))
+    t.readln(u"")
+    t.read(u"my_switch(config-vlan{})#".format(vlan_id))
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring_vlan(t, vlan_id, do):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
 
-    t.write("vlan {}".format(vlan_id))
-    t.readln("")
+    t.write(u"vlan {}".format(vlan_id))
+    t.readln(u"")
 
-    t.read("my_switch(config-vlan{})#".format(vlan_id))
+    t.read(u"my_switch(config-vlan{})#".format(vlan_id))
 
     t.write(do)
-    t.readln("")
+    t.readln(u"")
 
-    t.read("my_switch(config-vlan{})#".format(vlan_id))
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.read(u"my_switch(config-vlan{})#".format(vlan_id))
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def configuring_interface(t, interface, do):
-    interface_short_name = interface.split(' ')[1]
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface {}".format(interface))
-    t.readln("")
-    t.read("my_switch(config-if-Te{})#".format(interface_short_name))
+    interface_short_name = interface.split(u' ')[1]
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface {}".format(interface))
+    t.readln(u"")
+    t.read(u"my_switch(config-if-Te{})#".format(interface_short_name))
 
     t.write(do)
 
-    t.readln("")
-    t.read("my_switch(config-if-Te{})#".format(interface_short_name))
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch(config-if-Te{})#".format(interface_short_name))
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def create_bond(t, bond_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("interface port-channel {}".format(bond_id))
-    t.readln("")
-    t.read("my_switch(config-if-Po{})#".format(bond_id))
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"interface port-channel {}".format(bond_id))
+    t.readln(u"")
+    t.read(u"my_switch(config-if-Po{})#".format(bond_id))
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def remove_bond(t, bond_id):
-    t.write("configure")
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("no interface port-channel {}".format(bond_id))
-    t.readln("")
-    t.read("my_switch(config)#")
-    t.write("exit")
-    t.readln("")
-    t.read("my_switch#")
+    t.write(u"configure")
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"no interface port-channel {}".format(bond_id))
+    t.readln(u"")
+    t.read(u"my_switch(config)#")
+    t.write(u"exit")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def assert_interface_configuration(t, interface, config):
-    t.write("show running-config interface {}".format(interface))
+    t.write(u"show running-config interface {}".format(interface))
     for line in config:
         t.readln(line)
-    t.readln("")
-    t.read("my_switch#")
+    t.readln(u"")
+    t.read(u"my_switch#")
 
 
 def assert_running_config_contains_in_order(t, lines):
@@ -151,8 +151,8 @@ def assert_running_config_contains_in_order(t, lines):
 
 
 def get_running_config(t):
-    t.write("show running-config")
-    config = t.read_lines_until('my_switch#')
+    t.write(u"show running-config")
+    config = t.read_lines_until(u'my_switch#')
     return config
 
 
@@ -165,5 +165,5 @@ def assert_lines_order(config, lines):
         actual_content = config[expected_line_number]
 
         assert_that(actual_content, is_(expected_content),
-                    "Item <%s> was expected to be found at line {} but found {} instead.\nWas looking for {} in {}".format(
+                    u"Item <%s> was expected to be found at line {} but found {} instead.\nWas looking for {} in {}".format(
                         line, expected_line_number, actual_content, pprint.pformat(lines), pprint.pformat(config)))

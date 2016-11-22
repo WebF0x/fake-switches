@@ -18,19 +18,19 @@ import re
 class CommandProcessor(object):
 
     def get_command_func(self, line):
-        if line.startswith("!"):
+        if line.startswith(u"!"):
             return (lambda: None), []
         else:
             line_split = line.strip().split()
             command = line_split[0]
             args = line_split[1:]
 
-            if command == "no":
-                command += "_" + args.pop(0)
+            if command == u"no":
+                command += u"_" + args.pop(0)
 
-            command = re.sub('[-]', "_", command)
+            command = re.sub(u'[-]', u"_", command)
 
-            matching = sorted([c for c in dir(self) if c.startswith('do_' + command)])
+            matching = sorted([c for c in dir(self) if c.startswith(u'do_' + command)])
             if len(matching) >= 1:
                 return getattr(self, matching[0], None), args
 

@@ -26,7 +26,7 @@ from tests.util.global_reactor import dell10g_switch_ip, dell10g_switch_with_com
 
 class Dell10GEnabledWithCommitDelayTest(unittest.TestCase):
     def setUp(self):
-        self.protocol = SshTester("ssh", dell10g_switch_ip, dell10g_switch_with_commit_delay_ssh_port, 'root', 'root')
+        self.protocol = SshTester(u"ssh", dell10g_switch_ip, dell10g_switch_with_commit_delay_ssh_port, u'root', u'root')
 
     def tearDown(self):
         flexmock_teardown()
@@ -36,20 +36,20 @@ class Dell10GEnabledWithCommitDelayTest(unittest.TestCase):
         t.child.timeout = 10
         enable(t)
 
-        t.write("copy running-config startup-config")
+        t.write(u"copy running-config startup-config")
 
-        t.readln("")
-        t.readln("This operation may take a few minutes.")
-        t.readln("Management interfaces will not be available during this time.")
-        t.readln("")
-        t.read("Are you sure you want to save? (y/n) ")
-        t.write_raw("y")
+        t.readln(u"")
+        t.readln(u"This operation may take a few minutes.")
+        t.readln(u"Management interfaces will not be available during this time.")
+        t.readln(u"")
+        t.read(u"Are you sure you want to save? (y/n) ")
+        t.write_raw(u"y")
         start_time = time()
-        t.readln("")
-        t.readln("")
-        t.readln("Configuration Saved!")
+        t.readln(u"")
+        t.readln(u"")
+        t.readln(u"Configuration Saved!")
         end_time = time()
-        t.read("my_switch#")
+        t.read(u"my_switch#")
 
         assert_that((end_time - start_time), greater_than(COMMIT_DELAY))
 
@@ -58,19 +58,19 @@ class Dell10GEnabledWithCommitDelayTest(unittest.TestCase):
         t.child.timeout = 10
         enable(t)
 
-        t.write("copy running-config startup-config")
+        t.write(u"copy running-config startup-config")
 
-        t.readln("")
-        t.readln("This operation may take a few minutes.")
-        t.readln("Management interfaces will not be available during this time.")
-        t.readln("")
-        t.read("Are you sure you want to save? (y/n) ")
-        t.write_raw("n")
+        t.readln(u"")
+        t.readln(u"This operation may take a few minutes.")
+        t.readln(u"Management interfaces will not be available during this time.")
+        t.readln(u"")
+        t.read(u"Are you sure you want to save? (y/n) ")
+        t.write_raw(u"n")
         start_time = time()
-        t.readln("")
-        t.readln("")
-        t.readln("Configuration Not Saved!")
+        t.readln(u"")
+        t.readln(u"")
+        t.readln(u"Configuration Not Saved!")
         end_time = time()
-        t.read("my_switch#")
+        t.read(u"my_switch#")
 
         assert_that((end_time - start_time), less_than(COMMIT_DELAY))

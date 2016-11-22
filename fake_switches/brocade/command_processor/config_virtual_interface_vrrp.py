@@ -24,11 +24,11 @@ class ConfigVirtualInterfaceVrrpCommandProcessor(ConfigInterfaceCommandProcessor
         self.vrrp = vrrp
 
     def get_prompt(self):
-        return "SSH@%s(config-vif-%s-vrid-%s)#" % (
+        return u"SSH@%s(config-vif-%s-vrid-%s)#" % (
             self.switch_configuration.name, self.port.vlan_id, self.vrrp.group_id)
 
     def do_backup(self, *args):
-        if "priority".startswith(args[0]) and "track-priority".startswith(args[2]):
+        if u"priority".startswith(args[0]) and u"track-priority".startswith(args[2]):
             self.vrrp.priority = args[1]
             if len(self.vrrp.track) > 0:
                 track_port = list(self.vrrp.track.keys())[0]
@@ -78,7 +78,7 @@ class ConfigVirtualInterfaceVrrpCommandProcessor(ConfigInterfaceCommandProcessor
         if len(self.vrrp.track) > 0:
             old_value = list(self.vrrp.track.values())[0]
 
-        self.vrrp.track = {' '.join(args[0:2]): old_value}
+        self.vrrp.track = {u' '.join(args[0:2]): old_value}
 
     def do_no_track_port(self, *_):
         old_value = None

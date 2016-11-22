@@ -22,7 +22,7 @@ class ConfigVrfCommandProcessor(BaseCommandProcessor):
         self.vrf = vrf
 
     def get_prompt(self):
-        return "SSH@%s(config-vrf-%s)#" % (self.switch_configuration.name, self.vrf.name)
+        return u"SSH@%s(config-vrf-%s)#" % (self.switch_configuration.name, self.vrf.name)
 
     def do_exit(self):
         self.is_done = True

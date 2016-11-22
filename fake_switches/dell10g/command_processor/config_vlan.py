@@ -22,7 +22,7 @@ class Dell10GConfigureVlanCommandProcessor(BaseCommandProcessor):
         self.vlan = vlan
 
     def get_prompt(self):
-        return "\n{}(config-vlan{})#".format(self.switch_configuration.name, self.vlan.number)
+        return u"\n{}(config-vlan{})#".format(self.switch_configuration.name, self.vlan.number)
 
     def do_name(self, *args):
         self.vlan.name = args[0]

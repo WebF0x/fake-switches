@@ -22,25 +22,25 @@ class ConfigVlanCommandProcessor(BaseCommandProcessor):
         self.vlan = vlan
 
     def get_prompt(self):
-        return "SSH@%s(config-vlan-%s)#" % (self.switch_configuration.name, self.vlan.number)
+        return u"SSH@%s(config-vlan-%s)#" % (self.switch_configuration.name, self.vlan.number)
 
     def do_untagged(self, *args):
-        port = self.switch_configuration.get_port_by_partial_name(" ".join(args))
+        port = self.switch_configuration.get_port_by_partial_name(u" ".join(args))
         if port is not None:
             if port.trunk_vlans is None:
                 port.access_vlan = self.vlan.number
             else:
                 port.trunk_native_vlan = self.vlan.number
         else:
-            self.write_line("Invalid input -> %s" % " ".join(args[1:]))
-            self.write_line("Type ? for a list")
+            self.write_line(u"Invalid input -> %s" % u" ".join(args[1:]))
+            self.write_line(u"Type ? for a list")
 
     def do_no_untagged(self, *args):
-        port = self.switch_configuration.get_port_by_partial_name(" ".join(args))
+        port = self.switch_configuration.get_port_by_partial_name(u" ".join(args))
 
         if port is not None:
             if port.access_vlan != self.vlan.number and port.trunk_native_vlan != self.vlan.number:
-                self.write_line("Error: ports ethe {} are not untagged members of vlan {}".format(args[1], self.vlan.number))
+                self.write_line(u"Error: ports ethe {} are not untagged members of vlan {}".format(args[1], self.vlan.number))
                 return
 
             if port.trunk_vlans is None:
@@ -48,11 +48,11 @@ class ConfigVlanCommandProcessor(BaseCommandProcessor):
             else:
                 port.trunk_native_vlan = None
         else:
-            self.write_line("Invalid input -> %s" % " ".join(args[1:]))
-            self.write_line("Type ? for a list")
+            self.write_line(u"Invalid input -> %s" % u" ".join(args[1:]))
+            self.write_line(u"Type ? for a list")
 
     def do_tagged(self, *args):
-        port = self.switch_configuration.get_port_by_partial_name(" ".join(args))
+        port = self.switch_configuration.get_port_by_partial_name(u" ".join(args))
         if port is not None:
             if port.trunk_vlans is None:
                 port.trunk_vlans = []
@@ -61,14 +61,14 @@ class ConfigVlanCommandProcessor(BaseCommandProcessor):
             if self.vlan.number not in port.trunk_vlans:
                 port.trunk_vlans.append(self.vlan.number)
         else:
-            self.write_line("Invalid input -> %s" % " ".join(args[1:]))
-            self.write_line("Type ? for a list")
+            self.write_line(u"Invalid input -> %s" % u" ".join(args[1:]))
+            self.write_line(u"Type ? for a list")
 
     def do_no_tagged(self, *args):
-        port = self.switch_configuration.get_port_by_partial_name(" ".join(args))
+        port = self.switch_configuration.get_port_by_partial_name(u" ".join(args))
         if port is not None:
             if port.trunk_vlans is None or self.vlan.number not in port.trunk_vlans:
-                self.write_line("Error: ports ethe {} are not tagged members of vlan {}".format(args[1], self.vlan.number))
+                self.write_line(u"Error: ports ethe {} are not tagged members of vlan {}".format(args[1], self.vlan.number))
                 return
 
             port.trunk_vlans.remove(self.vlan.number)
@@ -78,23 +78,23 @@ class ConfigVlanCommandProcessor(BaseCommandProcessor):
                     port.access_vlan = port.trunk_native_vlan
                 port.trunk_native_vlan = None
         else:
-            self.write_line("Invalid input -> %s" % " ".join(args[1:]))
-            self.write_line("Type ? for a list")
+            self.write_line(u"Invalid input -> %s" % u" ".join(args[1:]))
+            self.write_line(u"Type ? for a list")
 
     def do_router_interface(self, *args):
-        if len(args) != 2 or args[0] != "ve":
-            self.write_line("Invalid input -> {}".format(" ".join(args)))
-            self.write_line("Type ? for a list")
+        if len(args) != 2 or args[0] != u"ve":
+            self.write_line(u"Invalid input -> {}".format(u" ".join(args)))
+            self.write_line(u"Type ? for a list")
         else:
             actual_ve = next(
                 (p for p in self.switch_configuration.ports if isinstance(p, VlanPort) and p.vlan_id == self.vlan.number),
                 False)
             if not actual_ve:
-                name = "ve {}".format(args[1])
-                self.switch_configuration.add_port(self.switch_configuration.new("VlanPort", self.vlan.number,
+                name = u"ve {}".format(args[1])
+                self.switch_configuration.add_port(self.switch_configuration.new(u"VlanPort", self.vlan.number,
                                                                                  name))
             else:
-                self.write_line("Error: VLAN: %s  already has router-interface %s" % (
+                self.write_line(u"Error: VLAN: %s  already has router-interface %s" % (
                     self.vlan.number, split_port_name(actual_ve.name)[1]))
 
     def do_no_router_interface(self, *_):
